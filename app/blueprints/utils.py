@@ -26,7 +26,7 @@ def calcular_taxa_entrega(lat_cliente, lng_cliente):
         return 3.00
     elif distancia <= 6.0:
         return 5.00
-    elif distancia <= 10.0:
+    elif distancia <= 100.0:
         return 10.00
     else:
         return -1 # Fora da área de entrega
