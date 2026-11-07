@@ -5,7 +5,7 @@
     <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline-light">Voltar</a>
     <a
       href="{{ url_for('admin.imprimir_pedido', pedido_id=pedido.id) }}"
-      target="_blank"
+      target="_self"
       class="btn btn-orange"
       >🖨️ Imprimir</a
     >
@@ -27,7 +27,7 @@
       {% if pedido.lat and pedido.lng %}
       <a
         href="https://www.google.com/maps?q={{ pedido.lat }},{{ pedido.lng }}"
-        target="_blank"
+        target="_self"
         class="btn btn-sm btn-outline-info w-100 mb-3"
       >
         📍 Abrir no Google Maps
@@ -52,7 +52,7 @@
       {% if pedido.comprovante_url %}
       <a
         href="{{ pedido.comprovante_url }}"
-        target="_blank"
+        target="_self"
         class="btn btn-sm btn-success w-100 mt-2 fw-bold"
       >
         🧾 Ver Comprovante de Pagamento
