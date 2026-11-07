@@ -3,6 +3,7 @@ from .models import db, Configuracao, Produto, Pedido, ItemPedido
 from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 load_dotenv()
 
@@ -11,6 +12,14 @@ migrate = Migrate()
 def create_app():
     app = Flask(__name__)
 
+    app.wsgi_app = ProxyFix(
+        app.wsgi_app,
+        x_for=1,
+        x_proto=1,
+        x_host=1,
+        x_port=1
+    )
+    
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
