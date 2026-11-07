@@ -57,3 +57,11 @@ input::placeholder {
     opacity: 1;
 }
 
+.descricao-produto {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limita a 2 linhas */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
