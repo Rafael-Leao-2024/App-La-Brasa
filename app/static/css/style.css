@@ -1,0 +1,59 @@
+:root {
+    --cor-primaria: #FF6B00; /* Laranja La Brasa */
+    --cor-secundaria: #1A1A1A; /* Preto */
+}
+
+.bg-orange { background-color: var(--cor-primaria) !important; }
+.text-orange { color: var(--cor-primaria) !important; }
+.btn-orange {
+    background-color: var(--cor-primaria);
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+.btn-orange:hover {
+    background-color: #e66000;
+    color: white;
+}
+
+/* Cardápio */
+.card-lanche {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s;
+}
+.card-lanche:hover { transform: scale(1.02); }
+.card-lanche img { width: 100%; height: 200px; object-fit: cover; }
+
+/* Ajustes Mobile */
+@media (max-width: 768px) {
+    header img { height: 60px !important; }
+}
+
+/* com dos titulos e texto seja brancos */
+span, p, h1, h2, h3, h4, h5, h6, label, small {
+    color: white;
+}
+
+#nome::placeholder {
+    color: #adb5bd !important;
+    opacity: 1;
+}
+
+#telefone::placeholder {
+    color: #adb5bd !important;
+    opacity: 1;
+}
+
+#endereco::placeholder {
+    color: #adb5bd !important;
+    opacity: 1;
+}
+
+input::placeholder {
+    color: #adb5bd !important;
+    opacity: 1;
+}
+

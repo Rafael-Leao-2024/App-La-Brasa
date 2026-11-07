@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Pedido #{{ pedido.id }}</title>
+    <style>
+        /* Estilo específico para impressora térmica 80mm */
+        body { font-family: 'Courier New', Courier, monospace; width: 80mm; margin: 0 auto; font-size: 12px; color: #000; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-bold { font-weight: bold; }
+        .linha { border-top: 1px dashed #000; margin: 5px 0; }
+        .item { margin-bottom: 4px; }
+        .obs { font-size: 10px; font-style: italic; margin-left: 10px; }
+        .total { font-size: 14px; font-weight: bold; }
+        
+        /* Esconde os botões na hora de imprimir */
+        @media print {
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+    <div class="text-center">
+        <h2>LA BRASA</h2>
+        <p>Hamburgueria Artesanal</p>
+    </div>
+
+    <div class="linha"></div>
+    
+    <p class="text-bold">PEDIDO: #{{ pedido.id }} ({{ pedido.origem|upper }})</p>
+    <p>Data: {{ pedido.data_criacao.strftime('%d/%m/%Y %H:%M') }}</p>
+    <p>Cliente: {{ pedido.nome_cliente }}</p>
+    {% if pedido.telefone %}<p>Tel: {{ pedido.telefone }}</p>{% endif %}
+    <p>Endereço: {{ pedido.endereco or 'Retirada no Balcão' }}</p>
+
+    <div class="linha"></div>
+
+    <p class="text-bold">ITENS:</p>
+    {% for item in pedido.itens %}
+    <div class="item">
+        <p>{{ item.quantidade }}x {{ item.produto.nome }} <span class="text-right">R$ {{ "%.2f"|format(item.produto.preco * item.quantidade) }}</span></p>
+        {% if item.observacao %}
+        <div class="obs">>> OBS: {{ item.observacao }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="linha"></div>
+
+    <p>Subtotal: R$ {{ "%.2f"|format(pedido.total - pedido.taxa_entrega) }}</p>
+    <p>Taxa de Entrega: R$ {{ "%.2f"|format(pedido.taxa_entrega) }}</p>
+    <p class="total">TOTAL: R$ {{ "%.2f"|format(pedido.total) }}</p>
+
+    <div class="linha"></div>
+
+    <p>Pagamento: {{ pedido.forma_pagamento|upper }}</p>
+    <p class="text-bold">STATUS PAGAMENTO: {% if pedido.pago %}PAGO ✅{% else %}PENDENTE ❌{% endif %}</p>
+
+    <div class="linha"></div>
+
+    <div class="text-center" style="margin-top: 15px;">
+        <p>Obrigado pela preferência! 🔥</p>
+        <p>Volte sempre!</p>
+    </div>
+
+    <!-- Botões de controle (não aparecem na impressão) -->
+    <div class="no-print" style="margin-top: 20px; text-align: center;">
+        <button onclick="window.print()" style="padding: 10px; font-size: 16px;">🖨️ Imprimir Novamente</button>
+        <a href="{{ url_for('admin.admin_dashboard') }}" style="display: block; margin-top: 10px; color: blue;">Voltar ao Painel</a>
+    </div>
+
+</body>
+</html>

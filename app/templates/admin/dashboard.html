@@ -1,0 +1,207 @@
+{% extends "base.html" %} {% block content %}
+<!-- Header do Admin -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h2>Painel de Pedidos 🔥</h2>
+    <span
+      class="badge {% if loja_aberta %}bg-success{% else %}bg-danger{% endif %} fs-6"
+    >
+      Loja: {% if loja_aberta %}Aberta{% else %}Fechada{% endif %}
+    </span>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ 'admin.admin_produtos' }}" class="btn btn-outline-light"
+      >🍔 Gerenciar Cardápio</a
+    >
+    <a href="{{ url_for('admin.admin_novo_pedido') }}" class="btn btn-orange"
+      >➕ Novo Pedido Manual</a
+    >
+    <button
+      class="btn {% if loja_aberta %}btn-danger{% else %}btn-success{% endif %}"
+      onclick="toggleLoja()"
+    >
+      {% if loja_aberta %}Fechar Loja{% else %}Abrir Loja{% endif %}
+    </button>
+  </div>
+</div>
+
+<!-- Lista de Pedidos -->
+<div class="row">
+  {% for pedido in pedidos %}
+  <div class="col-lg-6 mb-4">
+    <!-- Borda colorida de acordo com o status -->
+    <div
+      class="card bg-dark text-white border-secondary h-100 shadow"
+      style="border-left: 5px solid {% if pedido.status == 'Recebido' %}#ffc107{% elif pedido.status == 'Em Preparo' %}#0d6efd{% elif pedido.status == 'Saiu para Entrega' %}#fd7e14{% elif pedido.status == 'Concluido' %}#198754{% else %}#dc3545{% endif %};"
+    >
+      <div
+        class="card-header border-secondary d-flex justify-content-between align-items-center"
+      >
+        <strong>Pedido #{{ pedido.id }}</strong>
+        <span
+          class="badge {% if pedido.origem == 'online' %}bg-info{% else %}bg-secondary{% endif %}"
+        >
+          {{ pedido.origem|upper }}
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="fw-bold text-orange">{{ pedido.nome_cliente }}</span>
+          <span class="text-muted small"
+            >{{ pedido.data_criacao.strftime('%d/%m às %H:%M') }}</span
+          >
+        </div>
+
+        <p class="small mb-1">
+          <strong>Pagamento:</strong> {{ pedido.forma_pagamento|upper }}
+        </p>
+        <p class="small mb-1">
+          <strong>Status Pagamento:</strong>
+          {% if pedido.pago %}<span class="text-success">✅ PAGO</span>{% else
+          %}<span class="text-warning">❌ PENDENTE</span>{% endif %}
+        </p>
+        <p class="small mb-1">
+          <strong>Total:</strong> R$ {{ "%.2f"|format(pedido.total) }}
+        </p>
+
+        <!-- Status Atual e Botão Rápido para Avançar -->
+        <div
+          class="mt-3 p-2 bg-secondary bg-opacity-25 rounded d-flex justify-content-between align-items-center"
+        >
+          <div>
+            <span class="small d-block">Status Atual:</span>
+            <strong>{{ pedido.status }}</strong>
+          </div>
+
+          <div class="dropdown">
+            <button
+              class="btn btn-sm btn-outline-light dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown"
+            >
+              Alterar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  onclick="alterarStatus({{ pedido.id }}, 'Recebido')"
+                  >Recebido</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  onclick="alterarStatus({{ pedido.id }}, 'Em Preparo')"
+                  >Em Preparo</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  onclick="alterarStatus({{ pedido.id }}, 'Saiu para Entrega')"
+                  >Saiu para Entrega</a
+                >
+              </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  onclick="alterarStatus({{ pedido.id }}, 'Concluido')"
+                  >Concluído</a
+                >
+              </li>
+              <li><hr class="dropdown-divider" /></li>
+              <li>
+                <a
+                  class="dropdown-item text-danger"
+                  href="#"
+                  onclick="alterarStatus({{ pedido.id }}, 'Cancelado')"
+                  >Cancelar Pedido</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div
+        class="card-footer border-secondary d-flex justify-content-between gap-2"
+      >
+        <a
+          href="{{ url_for('admin.detalhes_pedido', pedido_id=pedido.id) }}"
+          class="btn btn-sm btn-outline-info w-50"
+          >🔍 Detalhes</a
+        >
+        {% if pedido.comprovante_url %}
+        <a
+          href="{{ pedido.comprovante_url }}"
+          target="_blank"
+          class="btn btn-sm btn-outline-success"
+          title="Ver Comprovante"
+        >
+          🧾
+        </a>
+        {% endif %}
+        <a
+          href="{{ url_for('admin.imprimir_pedido', pedido_id=pedido.id) }}"
+          target="_blank"
+          class="btn btn-sm btn-outline-light w-50"
+          >🖨️ Imprimir</a
+        >
+        <button
+          class="btn btn-sm {% if pedido.pago %}btn-success{% else %}btn-outline-warning{% endif %}"
+          onclick="togglePago({{ pedido.id }})"
+          title="Marcar/Desmarcar Pago"
+        >
+          💰
+        </button>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12 text-center text-muted mt-5">
+    <h4>Nenhum pedido no momento...</h4>
+    <p>Aguardando novos pedidos online ou manuais.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %} {% block scripts %}
+<script>
+  function alterarStatus(id, novoStatus) {
+    fetch(`/admin/api/alterar-status/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: novoStatus }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.sucesso) window.location.reload();
+      });
+  }
+
+  function togglePago(id) {
+    fetch(`/admin/api/marcar-pago/${id}`, { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.sucesso) window.location.reload();
+      });
+  }
+
+  function toggleLoja() {
+    fetch(`/admin/api/toggle-loja`, { method: "POST" })
+      .then((res) => res.json())
+      .then((data) => window.location.reload());
+  }
+
+  // AUTO-REFRESH: Atualiza a página a cada 30 segundos para chegar pedidos novos
+  setTimeout(() => {
+    window.location.reload();
+  }, 30000);
+</script>
+{% endblock %}

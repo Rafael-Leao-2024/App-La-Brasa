@@ -1,0 +1,58 @@
+# ==========================================
+# AMBIENTE VIRTUAL (Python)
+# ==========================================
+venv/
+env/
+.venv/
+ENV/
+
+# ==========================================
+# ARQUIVOS DO PYTHON
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+
+# ==========================================
+# BANCO DE DADOS
+# ==========================================
+# O banco de dados SQLite AINDA deve ser ignorado, 
+# senão você pode sobrescrever pedidos reais ao dar commit.
+*.sqlite
+*.sqlite3
+labrasa.db
+
+# ==========================================
+# FOTOS DOS PRODUTOS (LIBERADO PARA SUBIR)
+# ==========================================
+# A linha "static/uploads/*" foi REMOVIDA daqui.
+# Agora o Git vai rastrear e subir todas as fotos dos lanches.
+
+# ==========================================
+# VARIÁVEIS DE AMBIENTE E CHAVES SECRETAS
+# ==========================================
+.env
+.env.local
+.flaskenv
+*.pem
+*.key
+
+# ==========================================
+# IDE E SISTEMA OPERACIONAL
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# LOGS E CACHE
+# ==========================================
+*.log
+.cache/
+.pytest_cache/

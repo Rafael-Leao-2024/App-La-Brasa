@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Novo Pedido Manual 📝</h2>
+    <a href="/admin" class="btn btn-outline-light">Voltar</a>
+</div>
+
+<div class="row">
+    <!-- Cardápio para Adicionar -->
+    <div class="col-md-7">
+        <div class="card bg-dark border-secondary p-3 mb-4">
+            <h4 class="text-orange mb-3">Adicionar Itens</h4>
+            <div class="row" id="lista-produtos">
+                {% for produto in produtos %}
+                <div class="col-6 mb-3">
+                    <div class="card bg-secondary text-white p-2 h-100">
+                        <h6 class="mb-1">{{ produto.nome }}</h6>
+                        <span class="text-warning mb-2">R$ {{ "%.2f"|format(produto.preco) }}</span>
+                        <button class="btn btn-orange btn-sm mt-auto" onclick="addItem({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }})">Adicionar</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumo e Dados do Cliente -->
+    <div class="col-md-5">
+        <div class="card bg-dark border-secondary p-3">
+            <h4 class="text-orange mb-3">Resumo do Pedido</h4>
+            
+            <ul class="list-group mb-3" id="carrinho-lista">
+                <!-- Itens serão injetados aqui via JS -->
+                <li class="list-group-item bg-dark text-muted border-secondary text-center" id="carrinho-vazio">Nenhum item adicionado.</li>
+            </ul>
+
+            <div class="mb-2 d-flex justify-content-between">
+                <span>Subtotal:</span>
+                <span id="subtotal">R$ 0,00</span>
+            </div>
+            <div class="mb-2 d-flex justify-content-between align-items-center">
+                <span>Taxa de Entrega:</span>
+                <input type="number" step="0.01" id="taxa-entrega" class="form-control form-control-sm bg-dark text-white border-secondary" style="width: 80px;" value="0" onchange="calcularTotal()">
+            </div>
+            <hr class="border-secondary">
+            <div class="mb-3 d-flex justify-content-between text-orange fs-5">
+                <span>Total:</span>
+                <strong id="total-geral">R$ 0,00</strong>
+            </div>
+
+            <hr class="border-secondary">
+            
+            <h5 class="text-orange mb-3">Dados do Cliente</h5>
+            <form id="form-manual">
+                <div class="mb-2">
+                    <input type="text" id="nome" class="form-control bg-dark text-white border-secondary" placeholder="Nome do Cliente *" required>
+                </div>
+                <div class="mb-2">
+                    <input type="text" id="telefone" class="form-control bg-dark text-white border-secondary" placeholder="Telefone">
+                </div>
+                <div class="mb-2">
+                    <input type="text" id="endereco" class="form-control bg-dark text-white border-secondary" placeholder="Endereço (deixe vazio p/ Retirada)">
+                </div>
+                <div class="mb-2">
+                    <select id="pagamento" class="form-select bg-dark text-white border-secondary">
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="pix">PIX</option>
+                        <option value="cartao">Cartão</option>
+                    </select>
+                </div>
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="pago" checked>
+                    <label class="form-check-label text-success fw-bold" for="pago">
+                        Pedido já PAGO
+                    </label>
+                </div>
+                <button type="button" class="btn btn-orange w-100" onclick="salvarPedido()">Finalizar e Salvar Pedido</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let carrinho = [];
+    let subtotal = 0;
+
+    function addItem(id, nome, preco) {
+        const obs = prompt(`Observação para ${nome}:`);
+        carrinho.push({ id, nome, preco, quantidade: 1, observacao: obs || '' });
+        renderCarrinho();
+    }
+
+    function removerItem(index) {
+        carrinho.splice(index, 1);
+        renderCarrinho();
+    }
+
+    function renderCarrinho() {
+        const lista = document.getElementById('carrinho-lista');
+        lista.innerHTML = '';
+        subtotal = 0;
+
+        if(carrinho.length === 0) {
+            lista.innerHTML = '<li class="list-group-item bg-dark text-muted border-secondary text-center">Nenhum item adicionado.</li>';
+        }
+
+        carrinho.forEach((item, index) => {
+            subtotal += item.preco;
+            lista.innerHTML += `
+                <li class="list-group-item bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-2">
+                    <div>
+                        <span class="fw-bold">${item.quantidade}x ${item.nome}</span><br>
+                        <small class="text-muted">${item.observacao}</small>
+                    </div>
+                    <div>
+                        <span class="text-orange me-2">R$ ${item.preco.toFixed(2)}</span>
+                        <button class="btn btn-sm btn-outline-danger" onclick="removerItem(${index})">X</button>
+                    </div>
+                </li>
+            `;
+        });
+
+        document.getElementById('subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+        calcularTotal();
+    }
+
+    function calcularTotal() {
+        const taxa = parseFloat(document.getElementById('taxa-entrega').value) || 0;
+        const total = subtotal + taxa;
+        document.getElementById('total-geral').innerText = `R$ ${total.toFixed(2)}`;
+    }
+
+    function salvarPedido() {
+        if(carrinho.length === 0) return alert("Adicione itens ao pedido!");
+        const nome = document.getElementById('nome').value;
+        if(!nome) return alert("Informe o nome do cliente!");
+
+        const pedidoData = {
+            nome_cliente: nome,
+            telefone: document.getElementById('telefone').value,
+            endereco: document.getElementById('endereco').value,
+            taxa_entrega: parseFloat(document.getElementById('taxa-entrega').value) || 0,
+            pagamento: document.getElementById('pagamento').value,
+            pago: document.getElementById('pago').checked,
+            total: subtotal + (parseFloat(document.getElementById('taxa-entrega').value) || 0),
+            itens: carrinho
+        };
+
+        fetch('/admin/api/salvar-pedido-manual', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(pedidoData)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.sucesso) {
+                alert("Pedido salvo com sucesso!");
+                window.location.href = `/admin/imprimir/${data.pedido_id}`; // Redireciona para a impressão
+            }
+        });
+    }
+</script>
+{% endblock %}

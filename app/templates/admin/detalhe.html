@@ -1,0 +1,135 @@
+{% extends "base.html" %} {% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Detalhes do Pedido #{{ pedido.id }}</h2>
+  <div>
+    <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline-light">Voltar</a>
+    <a
+      href="{{ url_for('admin.imprimir_pedido', pedido_id=pedido.id) }}"
+      target="_blank"
+      class="btn btn-orange"
+      >🖨️ Imprimir</a
+    >
+  </div>
+</div>
+
+<div class="row">
+  <!-- Informações do Cliente -->
+  <div class="col-md-4 mb-4">
+    <div class="card bg-dark border-secondary p-3 h-100">
+      <h4 class="text-orange mb-3">Dados do Cliente</h4>
+      <p><strong>Nome:</strong> {{ pedido.nome_cliente }}</p>
+      <p><strong>Telefone:</strong> {{ pedido.telefone or 'Não informado' }}</p>
+      <p><strong>CPF:</strong> {{ pedido.cpf_cliente or 'Não informado' }}</p>
+      <p>
+        <strong>Endereço:</strong> {{ pedido.endereco or 'Retirada no Balcão' }}
+      </p>
+
+      {% if pedido.lat and pedido.lng %}
+      <a
+        href="https://www.google.com/maps?q={{ pedido.lat }},{{ pedido.lng }}"
+        target="_blank"
+        class="btn btn-sm btn-outline-info w-100 mb-3"
+      >
+        📍 Abrir no Google Maps
+      </a>
+      {% endif %}
+
+      <hr class="border-secondary" />
+      <p>
+        <strong>Origem:</strong>
+        <span class="text-uppercase">{{ pedido.origem }}</span>
+      </p>
+      <p>
+        <strong>Data:</strong> {{ pedido.data_criacao.strftime('%d/%m/%Y %H:%M')
+        }}
+      </p>
+      <p><strong>Pagamento:</strong> {{ pedido.forma_pagamento|upper }}</p>
+      <p>
+        <strong>Status Pagamento:</strong> {% if pedido.pago %}✅ PAGO{% else
+        %}❌ PENDENTE{% endif %}
+      </p>
+      <!-- 🚨 AQUI ESTÁ O BOTÃO DO COMPROVANTE -->
+      {% if pedido.comprovante_url %}
+      <a
+        href="{{ pedido.comprovante_url }}"
+        target="_blank"
+        class="btn btn-sm btn-success w-100 mt-2 fw-bold"
+      >
+        🧾 Ver Comprovante de Pagamento
+      </a>
+      {% endif %}
+      <h4 class="mt-3">
+        Total:
+        <span class="text-orange">R$ {{ "%.2f"|format(pedido.total) }}</span>
+      </h4>
+    </div>
+  </div>
+
+  <!-- Itens do Pedido com Fotos -->
+  <div class="col-md-8 mb-4">
+    <div class="card bg-dark border-secondary p-3 h-100">
+      <h4 class="text-orange mb-3">Itens do Pedido</h4>
+
+      <div class="list-group list-group-flush bg-transparent">
+        {% for item in pedido.itens %}
+        <div
+          class="list-group-item bg-dark text-white border-secondary d-flex align-items-center p-3 mb-2 rounded"
+        >
+          <!-- FOTO DO PRODUTO -->
+          {% if item.produto.foto %}
+          <img
+            src="{{ url_for('static', filename='uploads/' + item.produto.foto) }}"
+            alt="{{ item.produto.nome }}"
+            style="
+              width: 80px;
+              height: 80px;
+              object-fit: cover;
+              border-radius: 8px;
+            "
+            class="me-3 border border-secondary"
+          />
+          {% else %}
+          <div
+            class="me-3 bg-secondary d-flex align-items-center justify-content-center rounded"
+            style="width: 80px; height: 80px"
+          >
+            <span>Sem foto</span>
+          </div>
+          {% endif %}
+
+          <!-- INFOS DO ITEM -->
+          <div class="flex-grow-1">
+            <h5 class="mb-1 text-orange">
+              {{ item.quantidade }}x {{ item.produto.nome }}
+            </h5>
+            {% if item.observacao %}
+            <p class="mb-0 small text-warning">
+              <strong>Obs:</strong> {{ item.observacao }}
+            </p>
+            {% endif %}
+          </div>
+
+          <div class="text-end fw-bold">
+            R$ {{ "%.2f"|format(item.produto.preco * item.quantidade) }}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Taxas -->
+      <div class="mt-4">
+        <div class="d-flex justify-content-between text-muted">
+          <span>Subtotal:</span>
+          <span
+            >R$ {{ "%.2f"|format(pedido.total - pedido.taxa_entrega) }}</span
+          >
+        </div>
+        <div class="d-flex justify-content-between text-muted">
+          <span>Taxa de Entrega:</span>
+          <span>R$ {{ "%.2f"|format(pedido.taxa_entrega) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

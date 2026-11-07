@@ -1,0 +1,37 @@
+from flask import Flask
+from .models import db, Configuracao, Produto, Pedido, ItemPedido
+from flask_migrate import Migrate
+import os
+
+migrate = Migrate()
+
+def create_app():
+    app = Flask(__name__)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///labrasa.db'
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
+    app.config['SECRET_KEY'] = 'chave_secreta_super_segura'
+
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+
+    
+    # Additional configuration and route setup can be done here
+    # Cria o banco de dados na primeira execução
+    with app.app_context():
+        db.create_all()
+        if not Configuracao.query.first():
+            db.session.add(Configuracao(loja_aberta=True))
+            db.session.commit()
+
+    from .blueprints.admin import admin_bp
+    from .blueprints.cliente import cliente_bp
+    app.register_blueprint(admin_bp)
+    app.register_blueprint(cliente_bp)
+    
+    return app
