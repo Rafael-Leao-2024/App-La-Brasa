@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from app.models import Produto, db, Pedido, ItemPedido, Configuracao
 import os
 import uuid
-from flask import current_app as app
+from flask import current_app
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -36,7 +36,7 @@ def admin_produtos():
             nome_arquivo = f"{uuid.uuid4().hex}{extensao}"
             
             # Salva o arquivo fisicamente na pasta
-            caminho_completo = os.path.join(app.config['UPLOAD_FOLDER'], nome_arquivo)
+            caminho_completo = os.path.join(current_app.config['UPLOAD_FOLDER'], nome_arquivo)
             foto.save(caminho_completo)
 
         novo_produto = Produto(
