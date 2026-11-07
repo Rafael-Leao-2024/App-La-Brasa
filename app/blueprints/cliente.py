@@ -185,7 +185,7 @@ def acompanhar_pedido():
 
 # app.py (adicione esta rota)
 
-@cliente_bp.route('/webhook/infinitypay', methods=['POST'])
+@cliente_bp.route('/webhook', methods=['POST'])
 def webhook_infinitypay():
     dados = request.json
     print(f"Webhook recebido da InfinitePay: {dados}")  # Debugging line
