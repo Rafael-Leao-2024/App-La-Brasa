@@ -13,11 +13,15 @@ def create_app():
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
     
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
+    # Caminho persistente das imagens no Railway
+    app.config['UPLOAD_FOLDER'] = os.environ.get(
+        'UPLOAD_FOLDER',
+        os.path.join(app.root_path, 'static', 'uploads')
+    )
+
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     db.init_app(app)
     migrate.init_app(app, db)
