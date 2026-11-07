@@ -22,11 +22,6 @@ def create_app():
     )
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    print("================================")
-    print("UPLOAD_FOLDER:", app.config['UPLOAD_FOLDER'])
-    print("CAMINHO REAL:", os.path.realpath(app.config['UPLOAD_FOLDER']))
-    print("PASTA EXISTE:", os.path.exists(app.config['UPLOAD_FOLDER']))
-    print("================================")
 
     db.init_app(app)
     migrate.init_app(app, db)
