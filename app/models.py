@@ -1,6 +1,9 @@
 # models.py
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
+
+def agora_brasil():
+    return datetime.utcnow() - timedelta(hours=3)
 
 db = SQLAlchemy()
 
@@ -15,6 +18,7 @@ class Produto(db.Model):
     preco = db.Column(db.Float, nullable=False)
     categoria = db.Column(db.String(50), default='lanche')
     foto = db.Column(db.String(200), nullable=True)
+    ativo = db.Column(db.Boolean, default=True)  # Novo campo para ativar/desativar o produto
 
 class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,7 +38,7 @@ class Pedido(db.Model):
     origem = db.Column(db.String(20), default='online') # 'online' ou 'manual'
     
     total = db.Column(db.Float, nullable=False)
-    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    data_criacao = db.Column(db.DateTime, default=agora_brasil)
 
     itens = db.relationship('ItemPedido', backref='pedido', lazy=True)
 

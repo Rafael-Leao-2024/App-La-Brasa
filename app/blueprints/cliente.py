@@ -8,7 +8,7 @@ cliente_bp = Blueprint('cliente', __name__, url_prefix='/cliente')
 @cliente_bp.route('/')
 def index():
     config = Configuracao.query.first()
-    produtos = Produto.query.all()
+    produtos = Produto.query.filter_by(ativo=True).all()
     return render_template('cliente/index.html', produtos=produtos, loja_aberta=config.loja_aberta)
 
 

@@ -55,7 +55,7 @@ def admin_produtos():
 
 @admin_bp.route('/novo-pedido')
 def admin_novo_pedido():
-    produtos = Produto.query.all()
+    produtos = Produto.query.filter_by(ativo=True).all()  # Apenas produtos ativos
     return render_template('admin/novo_pedido.html', produtos=produtos)
 
 
@@ -126,5 +126,14 @@ def toggle_loja():
 def detalhes_pedido(pedido_id):
     pedido = Pedido.query.get_or_404(pedido_id)
     return render_template('admin/detalhe.html', pedido=pedido)
+
+
+# 🚨 Crie esta nova rota para Desativar/Ativar
+@admin_bp.route('/admin/produtos/toggle/<int:produto_id>', methods=['POST'])
+def toggle_produto(produto_id):
+    produto = Produto.query.get_or_404(produto_id)
+    produto.ativo = not produto.ativo # Inverte o status
+    db.session.commit()
+    return redirect(url_for('admin.admin_produtos'))
 
 

@@ -10,7 +10,7 @@
     </span>
   </div>
   <div class="d-flex gap-2">
-    <a href="{{ 'admin.admin_produtos' }}" class="btn btn-outline-light"
+    <a href="{{ url_for('admin.admin_produtos') }}" class="btn btn-outline-light"
       >🍔 Gerenciar Cardápio</a
     >
     <a href="{{ url_for('admin.admin_novo_pedido') }}" class="btn btn-orange"
@@ -54,6 +54,10 @@
         </div>
 
         <p class="small mb-1">
+          <strong>Data Criaçao:</strong> {{ pedido.data_criacao.strftime('%d/%m/%Y %H:%M') }}
+        </p>
+
+        <p class="small mb-1">
           <strong>Pagamento:</strong> {{ pedido.forma_pagamento|upper }}
         </p>
         <p class="small mb-1">
@@ -61,6 +65,8 @@
           {% if pedido.pago %}<span class="text-success">✅ PAGO</span>{% else
           %}<span class="text-warning">❌ PENDENTE</span>{% endif %}
         </p>
+
+
         <p class="small mb-1">
           <strong>Total:</strong> R$ {{ "%.2f"|format(pedido.total) }}
         </p>
