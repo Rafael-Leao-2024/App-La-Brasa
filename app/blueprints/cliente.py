@@ -188,6 +188,7 @@ def acompanhar_pedido():
 @cliente_bp.route('/webhook/infinitypay', methods=['POST'])
 def webhook_infinitypay():
     dados = request.json
+    print(f"Webhook recebido da InfinitePay: {dados}")  # Debugging line
     
     # A InfinitePay envia o order_nsu que você definiu ao criar o link
     order_nsu = dados.get('order_nsu')
