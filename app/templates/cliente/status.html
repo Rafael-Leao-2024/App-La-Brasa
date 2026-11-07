@@ -1,240 +1,387 @@
-{% extends "base.html" %}
-
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-10">
-        
-        <!-- Barra de Busca -->
-        <div class="card bg-dark border-secondary p-4 mb-4">
-            <h3 class="text-orange text-center mb-4">Acompanhar Pedido 🔍</h3>
-            <div class="input-group">
-                <input value="Digite seu CPF para buscar o pedido" type="text" id="cpf-busca" class="form-control bg-dark text-white border-secondary" placeholder="Digite seu CPF para buscar o pedido">
-                <button class="btn btn-orange" onclick="buscarPedido()">Buscar</button>
-            </div>
-            <div id="mensagem-erro" class="alert alert-danger d-none mt-3"></div>
-        </div>
-
-        <!-- Área do Status e Resumo -->
-        <div id="resultado-status" class="d-none">
-            <div class="row">
-                
-                <!-- Coluna Esquerda: Linha do Tempo -->
-                <div class="col-md-5 mb-4">
-                    <div class="card bg-dark border-secondary p-4 h-100">
-                        <h5 class="text-white mb-4">Status do Pedido</h5>
-                        
-                        <div class="d-flex flex-column gap-4 position-relative ps-3">
-                            <!-- Linha vertical de fundo -->
-                            <div class="position-absolute top-0 bottom-0 start-0 border-start border-2 border-secondary ms-4" style="z-index: 0;"></div>
-                            
-                            <!-- Etapa 1 -->
-                            <div class="d-flex align-items-center position-relative" style="z-index: 1;">
-                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;" id="step-recebido">📝</div>
-                                <div>
-                                    <h6 class="mb-0 text-white">Recebido</h6>
-                                    <small class=" ">O restaurante recebeu seu pedido.</small>
-                                </div>
-                            </div>
-                            
-                            <!-- Etapa 2 -->
-                            <div class="d-flex align-items-center position-relative" style="z-index: 1;">
-                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;" id="step-preparo">🍔</div>
-                                <div>
-                                    <h6 class="mb-0 text-white">Em Preparo</h6>
-                                    <small class=" ">Seu lanche está na chapa!</small>
-                                </div>
-                            </div>
-                            
-                            <!-- Etapa 3 -->
-                            <div class="d-flex align-items-center position-relative" style="z-index: 1;">
-                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;" id="step-entrega">🛵</div>
-                                <div>
-                                    <h6 class="mb-0 text-white">Saiu para Entrega</h6>
-                                    <small class=" ">O motoboy está a caminho.</small>
-                                </div>
-                            </div>
-                            
-                            <!-- Etapa 4 -->
-                            <div class="d-flex align-items-center position-relative" style="z-index: 1;">
-                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;" id="step-concluido">✅</div>
-                                <div>
-                                    <h6 class="mb-0 text-white">Entregue</h6>
-                                    <small class="">Bom apetite!</small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="aviso-atualizacao" class="text-center  small mt-4">
-                            <i class="spinner-border spinner-border-sm text-orange"></i> Atualizando...
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Coluna Direita: Resumo do Pedido -->
-                <div class="col-md-7 mb-4">
-                    <div class="card bg-dark border-secondary p-4 h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary pb-3">
-                            <h5 class="text-orange mb-0">Pedido #<span id="pedido-id"></span></h5>
-                            <span class=" small" id="pedido-data"></span>
-                        </div>
-
-                        <!-- Lista de Itens -->
-                        <div class="mb-4">
-                            <h6 class=" mb-3">Seus Itens:</h6>
-                            <div id="lista-itens" class="d-flex flex-column gap-3"></div>
-                        </div>
-
-                        <!-- Totalizadores -->
-                        <div class="border-top border-secondary pt-3 mt-auto">
-                            <div class="d-flex justify-content-between   small mb-1">
-                                <span>Taxa de Entrega:</span>
-                                <span>R$ <span id="taxa-entrega"></span></span>
-                            </div>
-                            <div class="d-flex justify-content-between text-white fs-5 fw-bold mb-3">
-                                <span>Total:</span>
-                                <span class="text-orange">R$ <span id="pedido-total"></span></span>
-                            </div>
-                            
-                            <!-- Endereço e Pagamento -->
-                            <div class="bg-secondary bg-opacity-25 p-3 rounded mt-3">
-                                <p class="mb-1 small"><strong>Endereço:</strong> <span id="pedido-endereco" class="text-light"></span></p>
-                                <p class="mb-0 small"><strong>Pagamento:</strong> <span id="pedido-pagamento" class="text-light text-uppercase"></span> 
-                                    <span id="status-pagamento" class="badge bg-warning text-dark ms-2"></span>
-                                </p>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
+  <div class="col-md-10">
+    <!-- Barra de Busca -->
+    <div class="card bg-dark border-secondary p-4 mb-4">
+      <h3 class="text-orange text-center mb-4">Acompanhar Pedido 🔍</h3>
+      <div class="input-group">
+        <input
+          value="Digite seu CPF para buscar o pedido"
+          type="text"
+          id="cpf-busca"
+          class="form-control bg-dark text-white border-secondary"
+          placeholder="Digite seu CPF para buscar o pedido"
+        />
+        <button class="btn btn-orange" onclick="buscarPedido()">Buscar</button>
+      </div>
+      <div id="mensagem-erro" class="alert alert-danger d-none mt-3"></div>
     </div>
+
+    <!-- Área do Status e Resumo -->
+    <div id="resultado-status" class="d-none">
+      <div class="row">
+        <!-- Coluna Esquerda: Linha do Tempo -->
+        <div class="col-md-5 mb-4">
+          <div class="card bg-dark border-secondary p-4 h-100">
+            <h5 class="text-white mb-4">Status do Pedido</h5>
+
+            <div class="d-flex flex-column gap-4 position-relative ps-3">
+              <!-- Linha vertical de fundo -->
+              <div
+                class="position-absolute top-0 bottom-0 start-0 border-start border-2 border-secondary ms-4"
+                style="z-index: 0"
+              ></div>
+
+              <!-- Etapa 1 -->
+              <div
+                class="d-flex align-items-center position-relative"
+                style="z-index: 1"
+              >
+                <div
+                  class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px"
+                  id="step-recebido"
+                >
+                  📝
+                </div>
+                <div>
+                  <h6 class="mb-0 text-white">Recebido</h6>
+                  <small class="text-muted"
+                    >O restaurante recebeu seu pedido.</small
+                  >
+                </div>
+              </div>
+
+              <!-- Etapa 2 -->
+              <div
+                class="d-flex align-items-center position-relative"
+                style="z-index: 1"
+              >
+                <div
+                  class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px"
+                  id="step-preparo"
+                >
+                  🍔
+                </div>
+                <div>
+                  <h6 class="mb-0 text-white">Em Preparo</h6>
+                  <small class="text-muted">Seu lanche está na chapa!</small>
+                </div>
+              </div>
+
+              <!-- Etapa 3 -->
+              <div
+                class="d-flex align-items-center position-relative"
+                style="z-index: 1"
+              >
+                <div
+                  class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px"
+                  id="step-entrega"
+                >
+                  🛵
+                </div>
+                <div>
+                  <h6 class="mb-0 text-white">Saiu para Entrega</h6>
+                  <small class="text-muted">O motoboy está a caminho.</small>
+                </div>
+              </div>
+
+              <!-- Etapa 4 -->
+              <div
+                class="d-flex align-items-center position-relative"
+                style="z-index: 1"
+              >
+                <div
+                  class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3"
+                  style="width: 40px; height: 40px"
+                  id="step-concluido"
+                >
+                  ✅
+                </div>
+                <div>
+                  <h6 class="mb-0 text-white">Entregue</h6>
+                  <small class="text-muted">Bom apetite!</small>
+                </div>
+              </div>
+            </div>
+
+            <div
+              id="aviso-atualizacao"
+              class="text-center text-muted small mt-4"
+            >
+              <i class="spinner-border spinner-border-sm text-orange"></i>
+              Atualizando...
+            </div>
+          </div>
+        </div>
+
+        <!-- Coluna Direita: Resumo do Pedido -->
+        <div class="col-md-7 mb-4">
+          <div class="card bg-dark border-secondary p-4 h-100">
+            <div
+              class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary pb-3"
+            >
+              <h5 class="text-orange mb-0">
+                Pedido #<span id="pedido-id"></span>
+              </h5>
+              <span class="text-muted small" id="pedido-data"></span>
+            </div>
+
+            <!-- Lista de Itens -->
+            <div class="mb-4">
+              <h6 class="text-muted mb-3">Seus Itens:</h6>
+              <div id="lista-itens" class="d-flex flex-column gap-3"></div>
+            </div>
+
+            <!-- Totalizadores -->
+            <div class="border-top border-secondary pt-3 mt-auto">
+              <div class="d-flex justify-content-between text-muted small mb-1">
+                <span>Taxa de Entrega:</span>
+                <span>R$ <span id="taxa-entrega"></span></span>
+              </div>
+              <div
+                class="d-flex justify-content-between text-white fs-5 fw-bold mb-3"
+              >
+                <span>Total:</span>
+                <span class="text-orange"
+                  >R$ <span id="pedido-total"></span
+                ></span>
+              </div>
+
+              <!-- Endereço e Pagamento -->
+              <div class="bg-secondary bg-opacity-25 p-3 rounded mt-3">
+                <p class="mb-1 small">
+                  <strong>Endereço:</strong>
+                  <span id="pedido-endereco" class="text-light"></span>
+                </p>
+                <p class="mb-0 small">
+                  <strong>Pagamento:</strong>
+                  <span
+                    id="pedido-pagamento"
+                    class="text-light text-uppercase"
+                  ></span>
+                  <span
+                    id="status-pagamento"
+                    class="badge bg-warning text-dark ms-2"
+                  ></span>
+                </p>
+
+                <!-- Botões de Ação Financeira -->
+                <div id="area-botoes-pagamento" class="mt-3">
+                  <!-- Botão de Pagar (Se estiver pendente e for PIX/Cartão) -->
+                  <a
+                    href="#"
+                    id="btn-pagar"
+                    class="btn btn-info w-100 fw-bold d-none"
+                    target="_target"
+                  >
+                    💳 Pagar Agora (PIX/Cartão)
+                  </a>
+
+                  <!-- Botão de Comprovante (Se o webhook já tiver confirmado) -->
+                  <a
+                    href="#"
+                    id="btn-comprovante"
+                    class="btn btn-success w-100 fw-bold d-none"
+                    target="_target"
+                  >
+                    🧾 Ver Comprovante de Pagamento
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script>
-    // Pega os dados salvos no localStorage
-    const dados = JSON.parse(localStorage.getItem('dadosClienteLaBrasa'));
+  // Pega os dados salvos no localStorage
+  const dados = JSON.parse(localStorage.getItem("dadosClienteLaBrasa"));
 
-    // Verifica se existem dados e coloca o CPF no input
-    if (dados && dados.cpf) {
-        document.getElementById('cpf-busca').value = dados.cpf;
-    }
+  // Verifica se existem dados e coloca o CPF no input
+  if (dados && dados.cpf) {
+    document.getElementById("cpf-busca").value = dados.cpf;
+  }
 
+  let intervaloConsulta = null;
 
-    let intervaloConsulta = null;
+  function buscarPedido() {
+    const cpf = document.getElementById("cpf-busca").value;
+    if (!cpf) return alert("Digite seu CPF!");
 
-    function buscarPedido() {
-        const cpf = document.getElementById('cpf-busca').value;
-        if (!cpf) return alert("Digite seu CPF!");
+    fetch(`/cliente/api/status-pedido/${cpf}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Nenhum pedido encontrado para este CPF.");
+        return res.json();
+      })
+      .then((pedido) => {
+        document.getElementById("mensagem-erro").classList.add("d-none");
+        document.getElementById("resultado-status").classList.remove("d-none");
 
-        fetch(`/cliente/api/status-pedido/${cpf}`)
-        .then(res => {
-            if (!res.ok) throw new Error("Nenhum pedido encontrado para este CPF.");
-            return res.json();
-        })
-        .then(pedido => {
-            document.getElementById('mensagem-erro').classList.add('d-none');
-            document.getElementById('resultado-status').classList.remove('d-none');
-            
-            // Preenche as informações básicas
-            document.getElementById('pedido-id').innerText = pedido.pedido_id;
-            document.getElementById('pedido-data').innerText = pedido.data;
-            document.getElementById('pedido-total').innerText = pedido.total.toFixed(2).replace('.', ',');
-            document.getElementById('taxa-entrega').innerText = pedido.taxa_entrega.toFixed(2).replace('.', ',');
-            document.getElementById('pedido-endereco').innerText = pedido.endereco;
-            document.getElementById('pedido-pagamento').innerText = pedido.pagamento;
-            
-            // Badge de Pago/Pendente
-            const badgePago = document.getElementById('status-pagamento');
-            if (pedido.pago) {
-                badgePago.innerText = 'PAGO';
-                badgePago.className = 'badge bg-success ms-2';
-            } else {
-                badgePago.innerText = 'PAGAR NA ENTREGA';
-                badgePago.className = 'badge bg-warning text-dark ms-2';
-            }
+        // Preenche as informações básicas
+        document.getElementById("pedido-id").innerText = pedido.pedido_id;
+        document.getElementById("pedido-data").innerText = pedido.data;
+        document.getElementById("pedido-total").innerText = pedido.total
+          .toFixed(2)
+          .replace(".", ",");
+        document.getElementById("taxa-entrega").innerText = pedido.taxa_entrega
+          .toFixed(2)
+          .replace(".", ",");
+        document.getElementById("pedido-endereco").innerText = pedido.endereco;
+        document.getElementById("pedido-pagamento").innerText =
+          pedido.pagamento;
 
-            // Renderiza os itens com fotos
-            const lista = document.getElementById('lista-itens');
-            lista.innerHTML = '';
-            pedido.itens.forEach(item => {
-                const fotoHtml = item.foto 
-                    ? `<img src="/static/uploads/${item.foto}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 border border-secondary">`
-                    : `<div class="me-3 bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">🍔</div>`;
+        // Badge de Pago/Pendente
+        const badgePago = document.getElementById("status-pagamento");
+        if (pedido.pago) {
+          badgePago.innerText = "PAGO";
+          badgePago.className = "badge bg-success ms-2";
+        } else {
+          badgePago.innerText = "PAGAR NA ENTREGA";
+          badgePago.className = "badge bg-warning text-dark ms-2";
+        }
 
-                lista.innerHTML += `
+        // 🚨 LÓGICA DOS BOTÕES DE PAGAMENTO/COMPROVANTE
+        const btnPagar = document.getElementById("btn-pagar");
+        const btnComprovante = document.getElementById("btn-comprovante");
+
+        // Sempre reseta a visibilidade dos botões primeiro
+        btnPagar.classList.add("d-none");
+        btnComprovante.classList.add("d-none");
+
+        if (pedido.pago) {
+          // Se já está pago, e a InfinitePay mandou o link do recibo pelo webhook:
+          if (pedido.comprovante_url) {
+            btnComprovante.href = pedido.comprovante_url;
+            btnComprovante.classList.remove("d-none");
+          }
+        } else {
+          // Se NÃO está pago, mas a API gerou o link de pagamento:
+          if (pedido.link_pagamento) {
+            btnPagar.href = pedido.link_pagamento;
+            btnPagar.classList.remove("d-none");
+          }
+        }
+
+        // Renderiza os itens com fotos
+        const lista = document.getElementById("lista-itens");
+        lista.innerHTML = "";
+        pedido.itens.forEach((item) => {
+          const fotoHtml = item.foto
+            ? `<img src="/static/uploads/${item.foto}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" class="me-3 border border-secondary">`
+            : `<div class="me-3 bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">🍔</div>`;
+
+          lista.innerHTML += `
                     <div class="d-flex align-items-center">
                         ${fotoHtml}
                         <div class="flex-grow-1">
                             <h6 class="mb-0 text-white">${item.quantidade}x ${item.nome}</h6>
-                            ${item.observacao ? `<small class="text-warning">Obs: ${item.observacao}</small>` : ''}
+                            ${item.observacao ? `<small class="text-warning">Obs: ${item.observacao}</small>` : ""}
                         </div>
-                        <span class="  small">R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+                        <span class="text-muted small">R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
                     </div>
                 `;
-            });
-            
-            atualizarTimeline(pedido.status);
-
-            // Inicia o polling
-            if (intervaloConsulta) clearInterval(intervaloConsulta);
-            intervaloConsulta = setInterval(() => {
-                consultarStatusSilencioso(cpf);
-            }, 30000); // 30 segundos
-        })
-        .catch(err => {
-            document.getElementById('resultado-status').classList.add('d-none');
-            document.getElementById('mensagem-erro').innerText = err.message;
-            document.getElementById('mensagem-erro').classList.remove('d-none');
-            if (intervaloConsulta) clearInterval(intervaloConsulta);
-        });
-    }
-
-    function consultarStatusSilencioso(cpf) {
-        fetch(`/cliente/api/status-pedido/${cpf}`)
-        .then(res => res.json())
-        .then(pedido => {
-            atualizarTimeline(pedido.status);
-        }).catch(() => {});
-    }
-
-    function atualizarTimeline(status) {
-        const steps = ['recebido', 'preparo', 'entrega', 'concluido'];
-        steps.forEach(step => {
-            const el = document.getElementById(`step-${step}`);
-            el.classList.remove('bg-success', 'bg-warning', 'bg-info', 'bg-danger');
-            el.classList.add('bg-secondary');
         });
 
-        if (status === 'Cancelado') {
-            const el = document.getElementById('step-recebido');
-            el.classList.replace('bg-secondary', 'bg-danger');
-            document.getElementById('aviso-atualizacao').innerHTML = '<span class="text-danger fw-bold">Pedido Cancelado ❌</span>';
-            return;
-        }
+        atualizarTimeline(pedido.status);
 
-        if (status === 'Recebido') {
-            document.getElementById('step-recebido').classList.replace('bg-secondary', 'bg-warning');
-        } 
-        else if (status === 'Em Preparo') {
-            document.getElementById('step-recebido').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('step-preparo').classList.replace('bg-secondary', 'bg-warning');
-        } 
-        else if (status === 'Saiu para Entrega') {
-            document.getElementById('step-recebido').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('step-preparo').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('step-entrega').classList.replace('bg-secondary', 'bg-info');
-        } 
-        else if (status === 'Concluido') {
-            document.getElementById('step-recebido').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('step-preparo').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('step-entrega').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('step-concluido').classList.replace('bg-secondary', 'bg-success');
-            document.getElementById('aviso-atualizacao').innerHTML = '<span class="text-success fw-bold">Pedido Finalizado! Bom apetite! 🔥</span>';
+        // Inicia o polling (consulta a cada 30 segundos)
+        if (intervaloConsulta) clearInterval(intervaloConsulta);
+        intervaloConsulta = setInterval(() => {
+          consultarStatusSilencioso(cpf);
+        }, 30000);
+      })
+      .catch((err) => {
+        document.getElementById("resultado-status").classList.add("d-none");
+        document.getElementById("mensagem-erro").innerText = err.message;
+        document.getElementById("mensagem-erro").classList.remove("d-none");
+        if (intervaloConsulta) clearInterval(intervaloConsulta);
+      });
+  }
+
+  function consultarStatusSilencioso(cpf) {
+    fetch(`/cliente/api/status-pedido/${cpf}`)
+      .then((res) => res.json())
+      .then((pedido) => {
+        atualizarTimeline(pedido.status);
+
+        // Atualiza silenciosamente os botões (caso o webhook tenha caído nesse meio tempo)
+        const btnPagar = document.getElementById("btn-pagar");
+        const btnComprovante = document.getElementById("btn-comprovante");
+        const badgePago = document.getElementById("status-pagamento");
+
+        if (pedido.pago) {
+          btnPagar.classList.add("d-none");
+          badgePago.innerText = "PAGO";
+          badgePago.className = "badge bg-success ms-2";
+
+          if (pedido.comprovante_url) {
+            btnComprovante.href = pedido.comprovante_url;
+            btnComprovante.classList.remove("d-none");
+          }
         }
+      })
+      .catch(() => {});
+  }
+
+  function atualizarTimeline(status) {
+    const steps = ["recebido", "preparo", "entrega", "concluido"];
+    steps.forEach((step) => {
+      const el = document.getElementById(`step-${step}`);
+      el.classList.remove("bg-success", "bg-warning", "bg-info", "bg-danger");
+      el.classList.add("bg-secondary");
+    });
+
+    if (status === "Cancelado") {
+      const el = document.getElementById("step-recebido");
+      el.classList.replace("bg-secondary", "bg-danger");
+      document.getElementById("aviso-atualizacao").innerHTML =
+        '<span class="text-danger fw-bold">Pedido Cancelado ❌</span>';
+      return;
     }
+
+    if (status === "Recebido") {
+      document
+        .getElementById("step-recebido")
+        .classList.replace("bg-secondary", "bg-warning");
+    } else if (status === "Em Preparo") {
+      document
+        .getElementById("step-recebido")
+        .classList.replace("bg-secondary", "bg-success");
+      document
+        .getElementById("step-preparo")
+        .classList.replace("bg-secondary", "bg-warning");
+    } else if (status === "Saiu para Entrega") {
+      document
+        .getElementById("step-recebido")
+        .classList.replace("bg-secondary", "bg-success");
+      document
+        .getElementById("step-preparo")
+        .classList.replace("bg-secondary", "bg-success");
+      document
+        .getElementById("step-entrega")
+        .classList.replace("bg-secondary", "bg-info");
+    } else if (status === "Concluido") {
+      document
+        .getElementById("step-recebido")
+        .classList.replace("bg-secondary", "bg-success");
+      document
+        .getElementById("step-preparo")
+        .classList.replace("bg-secondary", "bg-success");
+      document
+        .getElementById("step-entrega")
+        .classList.replace("bg-secondary", "bg-success");
+      document
+        .getElementById("step-concluido")
+        .classList.replace("bg-secondary", "bg-success");
+      document.getElementById("aviso-atualizacao").innerHTML =
+        '<span class="text-success fw-bold">Pedido Finalizado! Bom apetite! 🔥</span>';
+    }
+  }
 </script>
 {% endblock %}

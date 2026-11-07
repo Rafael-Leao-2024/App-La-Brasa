@@ -14,8 +14,8 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'static/uploads')
-    app.config['SECRET_KEY'] = 'chave_secreta_super_segura'
-
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
+    
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
 

@@ -99,6 +99,27 @@ def status_pedido(cpf):
     
     if not pedido:
         return jsonify({"erro": "Nenhum pedido encontrado para este CPF."}), 404
+
+
+    # Criar link de pagamento se o pedido não estiver pago e a forma de pagamento for pix ou cartão
+    if not pedido.pago and pedido.forma_pagamento in ['pix', 'cartao']:
+        from app.blueprints.infinitypay import gerar_link_pagamento
+        
+        url_webhook = url_for('cliente.webhook_infinitypay', _external=True)
+        url_retorno = url_for('cliente.acompanhar_pedido', _external=True)
+        
+        link_pagamento = gerar_link_pagamento(
+            pedido_id=pedido.id,
+            total_reais=pedido.total,
+            nome_cliente=pedido.nome_cliente,
+            descricao_pedido=f"Pedido #{pedido.id} - La Brasa",
+            url_webhook=url_webhook,
+            url_retorno=url_retorno
+        )
+        
+        if link_pagamento:
+            pedido.link_pagamento = link_pagamento
+            db.session.commit()
     
     # Monta a lista de itens para enviar para a tela
     itens_formatados = []
@@ -112,6 +133,8 @@ def status_pedido(cpf):
             "foto": item.produto.foto
         })
 
+    print(pedido.link_pagamento)  # Debugging line
+
     return jsonify({
         "pedido_id": pedido.id,
         "status": pedido.status,
@@ -121,7 +144,9 @@ def status_pedido(cpf):
         "pagamento": pedido.forma_pagamento,
         "pago": pedido.pago,
         "data": pedido.data_criacao.strftime('%d/%m/%Y %H:%M'),
-        "itens": itens_formatados
+        "itens": itens_formatados,
+        "comprovante_url": pedido.comprovante_url,  # Adiciona o link do comprovante
+        "link_pagamento": getattr(pedido, 'link_pagamento', None)  # Adiciona o link de pagamento se existir
     })
 
 
