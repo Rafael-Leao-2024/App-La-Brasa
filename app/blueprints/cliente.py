@@ -133,8 +133,6 @@ def status_pedido(cpf):
             "foto": item.produto.foto
         })
 
-    print(pedido.link_pagamento)  # Debugging line
-
     return jsonify({
         "pedido_id": pedido.id,
         "status": pedido.status,
