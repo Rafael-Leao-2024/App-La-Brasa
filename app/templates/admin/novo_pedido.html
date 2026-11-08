@@ -17,7 +17,7 @@
                 <div class="col-6 col-lg-4">
                     <div class="card text-white p-2 h-100 card-produto-admin" style="cursor: pointer;" onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})">
                         {% if produto.foto %}
-                            <img src="{{ url_for('static', filename='uploads/' + produto.foto) }}" class="rounded mb-2 w-100" style="height: 80px; object-fit: cover;">
+                            <img src="{{ url_for('static', filename='uploads/' + produto.foto) }}" class="card-lanche img-fluid rounded mb-3" style="max-height: 200px;">
                         {% else %}
                             <div class="bg-dark rounded mb-2 d-flex align-items-center justify-content-center" style="height: 80px;">🍔</div>
                         {% endif %}

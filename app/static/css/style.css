@@ -1,10 +1,22 @@
+/* ==========================================
+   VARIÁVEIS E CORES GERAIS
+   ========================================== */
 :root {
     --cor-primaria: #FF6B00; /* Laranja La Brasa */
     --cor-secundaria: #1A1A1A; /* Preto */
 }
 
+body {
+    background-color: #f8f9fa !important; /* Fundo geral clarinho */
+    color: #212529 !important; /* Texto escuro */
+}
+
+/* ==========================================
+   BOTÕES E TEXTOS CUSTOMIZADOS
+   ========================================== */
 .bg-orange { background-color: var(--cor-primaria) !important; }
 .text-orange { color: var(--cor-primaria) !important; }
+
 .btn-orange {
     background-color: var(--cor-primaria);
     color: white;
@@ -16,36 +28,22 @@
     color: white;
 }
 
-/* Cardápio */
-.card-lanche {
-    background-color: #ffffff; /* Fundo branco para o card */
-    border: 1px solid #e0e0e0;
-    border-radius: 12px;
-    overflow: hidden;
-    transition: transform 0.2s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombrinha leve */
-}
-.card-lanche:hover { transform: scale(1.02); }
-.card-lanche img { width: 100%; height: 200px; object-fit: cover; }
-
-/* Ajustes Mobile */
-@media (max-width: 768px) {
-    header img { height: 60px !important; }
-}
-
-/* Força os cards escuros do Bootstrap a ficarem brancos no tema claro */
+/* ==========================================
+   FORÇANDO O TEMA CLARO (Substituindo o Dark)
+   ========================================== */
+/* Transforma cartões e modais escuros em brancos */
 .card.bg-dark, .modal-content.bg-dark {
     background-color: #ffffff !important;
     border-color: #dee2e6 !important;
     color: #212529 !important;
 }
 
-/* Força textos que estavam brancos a ficarem escuros */
+/* Transforma textos brancos em escuros */
 .text-white, span.text-light {
     color: #212529 !important;
 }
 
-/* Ajusta os inputs (que eram escuros) para ficarem claros */
+/* Transforma inputs escuros em claros */
 .form-control.bg-dark, .form-select.bg-dark {
     background-color: #ffffff !important;
     border-color: #ced4da !important;
@@ -53,43 +51,88 @@
 }
 .form-control.bg-dark::placeholder { color: #6c757d !important; }
 
-/* Ajusta bordas que eram cinzas escuras */
+/* Ajusta bordas */
 .border-secondary {
     border-color: #dee2e6 !important;
 }
 
-/* Mantém as listas do carrinho e statuses legíveis */
+/* Fundos de listas (carrinho/status) */
 .bg-secondary.bg-opacity-25 {
     background-color: #f8f9fa !important;
 }
 
-/* Ajusta a descrição para continuar bonita no card claro */
+/* ==========================================
+   CARDÁPIO (CARDS DOS LANCHES)
+   ========================================== */
+.card-lanche {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Garante que todos os cards tenham a mesma altura */
+}
+
+.card-lanche:hover { 
+    transform: scale(1.02); 
+}
+
+.card-lanche img {
+    width: 100%;
+    height: 220px; 
+    object-fit: contain; /* Mostra a imagem inteira, sem cortar */
+    background-color: #ffffff; /* Fundo branco para a foto */
+    padding: 10px; 
+    border-bottom: 1px solid #eee;
+}
+
+/* Descrição do lanche */
 .descricao-produto {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 2; /* Limita a 2 linhas */
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: #6c757d !important; /* Cinza escuro para a descrição */
+    color: #6c757d !important; 
 }
 
-/* Efeito hover no card do extra */
+/* ==========================================
+   MODAL DE ADICIONAR (FOTO E EXTRAS)
+   ========================================== */
+#modalFoto {
+    width: 100%;
+    height: 220px; 
+    object-fit: contain; 
+    background-color: #ffffff; 
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+/* Cards dos Extras no Modal */
 .card-extra {
     transition: all 0.2s ease;
+    background-color: #f8f9fa !important;
+    border: 1px solid #dee2e6 !important;
 }
 
 .card-extra:hover {
-    background-color: rgba(255, 107, 0, 0.1) !important; /* Laranja transparente */
+    background-color: rgba(255, 107, 0, 0.1) !important; 
     border-color: var(--cor-primaria) !important;
 }
 
-/* Esconde a borda padrão do checkbox do Bootstrap */
 .extra-checkbox {
     box-shadow: none !important;
     cursor: pointer;
 }
 
-/* Efeito dos cards do PDV Admin */
+/* ==========================================
+   PDV ADMIN (PEDIDO MANUAL)
+   ========================================== */
 .card-produto-admin {
     transition: all 0.2s ease;
     border: 2px solid transparent;
@@ -100,4 +143,20 @@
 }
 .card-produto-admin:active {
     transform: scale(0.98);
+}
+
+/* ==========================================
+   RESPONSIVIDADE (MOBILE)
+   ========================================== */
+@media (max-width: 768px) {
+    /* Diminui a logo no celular */
+    header img { 
+        height: 60px !important; 
+    }
+    
+    /* Diminui as fotos dos lanches no celular */
+    .card-lanche img,
+    #modalFoto {
+        height: 180px; 
+    }
 }
