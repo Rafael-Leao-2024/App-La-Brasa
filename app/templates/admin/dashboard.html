@@ -10,7 +10,7 @@
     </span>
   </div>
   <div class="d-flex gap-2">
-    <a href="{{ url_for('admin.admin_produtos') }}" class="btn btn-outline-light"
+    <a href="{{ url_for('admin.admin_produtos') }}" class="btn btn-outline-dark"
       >🍔 Gerenciar Cardápio</a
     >
     <a href="{{ url_for('admin.admin_novo_pedido') }}" class="btn btn-orange"
@@ -82,13 +82,13 @@
 
           <div class="dropdown">
             <button
-              class="btn btn-sm btn-outline-light dropdown-toggle"
+              class="btn btn-sm btn-outline-dark dropdown-toggle"
               type="button"
               data-bs-toggle="dropdown"
             >
               Alterar
             </button>
-            <ul class="dropdown-menu dropdown-menu-dark">
+            <ul class="dropdown-menu dropdown-menu-light">
               <li>
                 <a
                   class="dropdown-item"
@@ -157,7 +157,7 @@
         <a
           href="{{ url_for('admin.imprimir_pedido', pedido_id=pedido.id) }}"
           target="_blank"
-          class="btn btn-sm btn-outline-light w-50"
+          class="btn btn-sm btn-outline-dark w-50"
           >🖨️ Imprimir</a
         >
         <button

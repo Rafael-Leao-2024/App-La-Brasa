@@ -51,6 +51,7 @@
             type="text"
             id="nome"
             class="form-control bg-dark text-white border-secondary"
+            placeholder="Nome Completo"
             required
           />
         </div>
@@ -60,6 +61,7 @@
             type="text"
             id="telefone"
             class="form-control bg-dark text-white border-secondary"
+            placeholder="(00) 00000-0000"
             required
           />
         </div>
@@ -130,7 +132,7 @@
 
     if (carrinho.length === 0) {
       container.innerHTML =
-        '<p class="text-center text-muted">Seu carrinho está vazio. <a href="/">Voltar ao cardápio</a></p>';
+        '<p class="text-center text-muted">Seu carrinho está vazio. <a href="{{ url_for('cliente.index') }}">Voltar ao cardápio</a></p>';
       document.getElementById("total-geral").innerText = "R$ 0,00";
       document.getElementById("subtotal").innerText = "R$ 0,00";
       return;
@@ -156,9 +158,9 @@
                 
                 <!-- Controles de Quantidade -->
                 <div class="d-flex align-items-center gap-2">
-                    <button class="btn btn-sm btn-outline-light" onclick="alterarQuantidade(${index}, -1)">-</button>
+                    <button class="btn btn-sm btn-outline-dark" onclick="alterarQuantidade(${index}, -1)">-</button>
                     <span class="text-white fw-bold px-2">${item.quantidade}</span>
-                    <button class="btn btn-sm btn-outline-light" onclick="alterarQuantidade(${index}, 1)">+</button>
+                    <button class="btn btn-sm btn-outline-dark" onclick="alterarQuantidade(${index}, 1)">+</button>
                     
                     <!-- Botão de Lixeira -->
                     <button class="btn btn-sm btn-outline-danger ms-3" onclick="removerItem(${index})" title="Remover item">
