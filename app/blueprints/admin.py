@@ -55,7 +55,7 @@ def admin_produtos():
     produtos = Produto.query.all()
     return render_template('admin/produtos.html', produtos=produtos)
 
-@admin_bp.route('/admin/novo-pedido')
+@admin_bp.route('/novo-pedido')
 def admin_novo_pedido():
     # Pega lanches, bebidas e porções (tudo que NÃO é extra)
     produtos = Produto.query.filter(Produto.categoria != 'extra', Produto.ativo == True).all()
