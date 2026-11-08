@@ -217,6 +217,7 @@
         (position) => {
           localizacaoCliente.lat = position.coords.latitude;
           localizacaoCliente.lng = position.coords.longitude;
+          console.log("Localização capturada:", localizacaoCliente);
 
           fetch("/cliente/api/calcular-frete", {
             method: "POST",
