@@ -17,9 +17,14 @@
   </a>
 </div>
 
-<!-- Grid de Produtos -->
+<!-- ========================================== -->
+<!-- SEÇÃO 1: LANCHES                           -->
+<!-- ========================================== -->
+{% set tem_lanche = produtos | selectattr('categoria', 'equalto', 'lanche') | list %}
+{% if tem_lanche %}
+<h3 class="text-orange mt-4 mb-3 border-bottom border-secondary pb-2">🍔 Nossos Lanches</h3>
 <div class="row">
-  {% for produto in produtos %}
+  {% for produto in produtos if produto.categoria == 'lanche' %}
   <div class="col-md-6 col-lg-4 mb-4">
     <div class="card-lanche">
       {% if produto.foto %}
@@ -29,8 +34,8 @@
       />
       {% else %}
       <div
-        style="height: 200px; background: #444"
-        class="d-flex align-items-center justify-content-center"
+        style="height: 200px; background: #f8f9fa"
+        class="d-flex align-items-center justify-content-center text-muted"
       >
         Sem Foto
       </div>
@@ -50,13 +55,7 @@
           <button
             class="btn btn-orange btn-sm"
             onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})"
-            {%
-            if
-            not
-            loja_aberta
-            %}disabled{%
-            endif
-            %}
+            {% if not loja_aberta %}disabled{% endif %}
           >
             + Adicionar
           </button>
@@ -66,6 +65,108 @@
   </div>
   {% endfor %}
 </div>
+{% endif %}
+
+<!-- ========================================== -->
+<!-- SEÇÃO 2: PORÇÕES                           -->
+<!-- ========================================== -->
+{% set tem_porcao = produtos | selectattr('categoria', 'equalto', 'porcao') | list %}
+{% if tem_porcao %}
+<h3 class="text-orange mt-4 mb-3 border-bottom border-secondary pb-2">🍟 Porções</h3>
+<div class="row">
+  {% for produto in produtos if produto.categoria == 'porcao' %}
+  <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card-lanche">
+      {% if produto.foto %}
+      <img
+        src="{{ url_for('static', filename='uploads/' + produto.foto) }}"
+        alt="{{ produto.nome }}"
+      />
+      {% else %}
+      <div
+        style="height: 200px; background: #f8f9fa"
+        class="d-flex align-items-center justify-content-center text-muted"
+      >
+        Sem Foto
+      </div>
+      {% endif %}
+      <div class="p-3">
+        <h5 class="text-orange">{{ produto.nome }}</h5>
+        <p
+          class="small text-light mb-3 descricao-produto"
+          style="min-height: 40px"
+        >
+          {{ produto.descricao }}
+        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fs-5 fw-bold"
+            >R$ {{ "%.2f"|format(produto.preco) }}</span
+          >
+          <button
+            class="btn btn-orange btn-sm"
+            onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})"
+            {% if not loja_aberta %}disabled{% endif %}
+          >
+            + Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ========================================== -->
+<!-- SEÇÃO 3: BEBIDAS                           -->
+<!-- ========================================== -->
+{% set tem_bebida = produtos | selectattr('categoria', 'equalto', 'bebida') | list %}
+{% if tem_bebida %}
+<h3 class="text-orange mt-4 mb-3 border-bottom border-secondary pb-2">🥤 Bebidas</h3>
+<div class="row">
+  {% for produto in produtos if produto.categoria == 'bebida' %}
+  <div class="col-md-6 col-lg-4 mb-4">
+    <div class="card-lanche">
+      {% if produto.foto %}
+      <img
+        src="{{ url_for('static', filename='uploads/' + produto.foto) }}"
+        alt="{{ produto.nome }}"
+      />
+      {% else %}
+      <div
+        style="height: 200px; background: #f8f9fa"
+        class="d-flex align-items-center justify-content-center text-muted"
+      >
+        Sem Foto
+      </div>
+      {% endif %}
+      <div class="p-3">
+        <h5 class="text-orange">{{ produto.nome }}</h5>
+        <p
+          class="small text-light mb-3 descricao-produto"
+          style="min-height: 40px"
+        >
+          {{ produto.descricao }}
+        </p>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="fs-5 fw-bold"
+            >R$ {{ "%.2f"|format(produto.preco) }}</span
+          >
+          <button
+            class="btn btn-orange btn-sm"
+            onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})"
+            {% if not loja_aberta %}disabled{% endif %}
+          >
+            + Adicionar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 
 <!-- Botão Flutuante do Carrinho -->
 <a
@@ -75,6 +176,7 @@
 >
   🛒 <span id="cart-count" class="badge bg-light text-dark">0</span>
 </a>
+
 <!-- Modal de Adicionar ao Carrinho -->
 <div class="modal fade" id="modalAdicionar" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -89,13 +191,14 @@
         ></button>
       </div>
       <div class="modal-body">
+        <!-- 🚨 CORRIGIDO: Tag da imagem limpa, o CSS cuida do resto -->
         <img
           id="modalFoto"
           src=""
-          class="card-lanche img-fluid rounded mb-3"
-          style="max-height: 200px;"
+          alt="Foto do Produto"
         />
         <p id="modalDescricao" class=""></p>
+        
         <div id="area-extras" class="mt-3 d-none">
           <label class="form-label fw-bold text-orange"
             >Turbine seu lanche! (+ Adicionais)</label
