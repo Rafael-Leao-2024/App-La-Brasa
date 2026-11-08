@@ -19,6 +19,7 @@ class Produto(db.Model):
     categoria = db.Column(db.String(50), default='lanche')
     foto = db.Column(db.String(200), nullable=True)
     ativo = db.Column(db.Boolean, default=True)  # Novo campo para ativar/desativar o produto
+    permite_extra = db.Column(db.Boolean, default=False) 
 
 class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)

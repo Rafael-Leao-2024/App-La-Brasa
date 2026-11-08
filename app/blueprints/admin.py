@@ -24,6 +24,7 @@ def admin_produtos():
         preco = request.form.get('preco')
         categoria = request.form.get('categoria')
         foto = request.files.get('foto')
+        permite_extra = True if request.form.get('permite_extra') else False
 
         nome_arquivo = None
         
@@ -44,7 +45,8 @@ def admin_produtos():
             descricao=descricao, 
             preco=float(preco), 
             categoria=categoria, 
-            foto=nome_arquivo
+            foto=nome_arquivo,
+            permite_extra=permite_extra
         )
         db.session.add(novo_produto)
         db.session.commit()

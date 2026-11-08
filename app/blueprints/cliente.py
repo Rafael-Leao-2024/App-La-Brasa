@@ -8,9 +8,12 @@ cliente_bp = Blueprint('cliente', __name__, url_prefix='/cliente')
 @cliente_bp.route('/')
 def index():
     config = Configuracao.query.first()
-    produtos = Produto.query.filter_by(ativo=True).all()
-    return render_template('cliente/index.html', produtos=produtos, loja_aberta=config.loja_aberta)
-
+    produtos = Produto.query.filter_by(ativo=True).filter(
+    Produto.categoria != 'extra'
+).all()
+    # 🚨 Busca todos os adicionais ativos para enviar para o HTML
+    extras = Produto.query.filter_by(ativo=True, categoria='extra').all()
+    return render_template('cliente/index.html', produtos=produtos, extras=extras, loja_aberta=config.loja_aberta)
 
 @cliente_bp.route('/api/fechar-pedido', methods=['POST'])
 def fechar_pedido():

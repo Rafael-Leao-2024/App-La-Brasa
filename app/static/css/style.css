@@ -18,11 +18,12 @@
 
 /* Cardápio */
 .card-lanche {
-    background-color: #2a2a2a;
-    border: 1px solid #444;
+    background-color: #ffffff; /* Fundo branco para o card */
+    border: 1px solid #e0e0e0;
     border-radius: 12px;
     overflow: hidden;
     transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombrinha leve */
 }
 .card-lanche:hover { transform: scale(1.02); }
 .card-lanche img { width: 100%; height: 200px; object-fit: cover; }
@@ -32,36 +33,58 @@
     header img { height: 60px !important; }
 }
 
-/* com dos titulos e texto seja brancos */
-span, p, h1, h2, h3, h4, h5, h6, label, small {
-    color: white;
+/* Força os cards escuros do Bootstrap a ficarem brancos no tema claro */
+.card.bg-dark, .modal-content.bg-dark {
+    background-color: #ffffff !important;
+    border-color: #dee2e6 !important;
+    color: #212529 !important;
 }
 
-#nome::placeholder {
-    color: #adb5bd !important;
-    opacity: 1;
+/* Força textos que estavam brancos a ficarem escuros */
+.text-white, span.text-light {
+    color: #212529 !important;
 }
 
-#telefone::placeholder {
-    color: #adb5bd !important;
-    opacity: 1;
+/* Ajusta os inputs (que eram escuros) para ficarem claros */
+.form-control.bg-dark, .form-select.bg-dark {
+    background-color: #ffffff !important;
+    border-color: #ced4da !important;
+    color: #212529 !important;
+}
+.form-control.bg-dark::placeholder { color: #6c757d !important; }
+
+/* Ajusta bordas que eram cinzas escuras */
+.border-secondary {
+    border-color: #dee2e6 !important;
 }
 
-#endereco::placeholder {
-    color: #adb5bd !important;
-    opacity: 1;
+/* Mantém as listas do carrinho e statuses legíveis */
+.bg-secondary.bg-opacity-25 {
+    background-color: #f8f9fa !important;
 }
 
-input::placeholder {
-    color: #adb5bd !important;
-    opacity: 1;
-}
-
+/* Ajusta a descrição para continuar bonita no card claro */
 .descricao-produto {
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Limita a 2 linhas */
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #6c757d !important; /* Cinza escuro para a descrição */
 }
 
+/* Efeito hover no card do extra */
+.card-extra {
+    transition: all 0.2s ease;
+}
+
+.card-extra:hover {
+    background-color: rgba(255, 107, 0, 0.1) !important; /* Laranja transparente */
+    border-color: var(--cor-primaria) !important;
+}
+
+/* Esconde a borda padrão do checkbox do Bootstrap */
+.extra-checkbox {
+    box-shadow: none !important;
+    cursor: pointer;
+}

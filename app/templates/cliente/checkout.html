@@ -123,7 +123,6 @@
   let localizacaoCliente = { lat: null, lng: null };
 
   // 1. Renderiza o carrinho na tela
-  // 1. Renderiza o carrinho na tela
   function renderizarCarrinho() {
     const container = document.getElementById("lista-carrinho");
     container.innerHTML = "";
@@ -131,20 +130,28 @@
 
     if (carrinho.length === 0) {
       container.innerHTML =
-        '<p class="text-center text-muted">Seu carrinho está vazio. <a href="/cliente/">Voltar ao cardápio</a></p>';
+        '<p class="text-center text-muted">Seu carrinho está vazio. <a href="/">Voltar ao cardápio</a></p>';
       document.getElementById("total-geral").innerText = "R$ 0,00";
       document.getElementById("subtotal").innerText = "R$ 0,00";
       return;
     }
 
-    // Usamos o index (i) para saber qual item estamos alterando
     carrinho.forEach((item, index) => {
       subtotal += item.preco * item.quantidade;
+
+      // Lógica para exibir os extras (se existirem)
+      let textoExtras = "";
+      if (item.extras && item.extras.length > 0) {
+          const nomesExtras = item.extras.map(e => e.nome).join(', ');
+          textoExtras = `<br><small class="text-info fw-bold">+ Extras: ${nomesExtras}</small>`;
+      }
 
       container.innerHTML += `
         <div class="d-flex justify-content-between align-items-center mb-3 border-bottom border-secondary pb-3">
             <div class="flex-grow-1">
-                <span class="fw-bold text-white fs-5">${item.nome}</span><br>
+                <span class="fw-bold text-white fs-5">${item.nome}</span>
+                ${textoExtras}
+                <br>
                 <small class="text-warning d-block mb-2">${item.observacao ? "Obs: " + item.observacao : ""}</small>
                 
                 <!-- Controles de Quantidade -->
@@ -171,34 +178,34 @@
     calcularTotal();
   }
 
-  // 🚨 NOVAS FUNÇÕES AQUI: Alterar quantidade e Remover item
+  // 2. Alterar quantidade (Botões + e -)
   function alterarQuantidade(index, mudanca) {
     carrinho[index].quantidade += mudanca;
 
-    // Se a quantidade chegar a zero, remove o item
     if (carrinho[index].quantidade <= 0) {
       carrinho.splice(index, 1);
     }
 
-    // Atualiza o LocalStorage e a tela
     localStorage.setItem("carrinhoLaBrasa", JSON.stringify(carrinho));
     renderizarCarrinho();
   }
 
+  // 3. Remover item (Lixeira)
   function removerItem(index) {
     if (confirm("Deseja remover este item do carrinho?")) {
-      carrinho.splice(index, 1); // Remove o item da lista
+      carrinho.splice(index, 1);
       localStorage.setItem("carrinhoLaBrasa", JSON.stringify(carrinho));
       renderizarCarrinho();
     }
   }
-  // 2. Calcula o total (Subtotal + Taxa)
+
+  // 4. Calcula o total (Subtotal + Taxa)
   function calcularTotal() {
     const total = subtotal + taxaAtual;
     document.getElementById("total-geral").innerText = `R$ ${total.toFixed(2)}`;
   }
 
-  // 3. Pega a localização do cliente
+  // 5. Pega a localização do cliente
   function pegarLocalizacao() {
     const btn = event.target;
     btn.innerText = "Buscando...";
@@ -209,7 +216,6 @@
           localizacaoCliente.lat = position.coords.latitude;
           localizacaoCliente.lng = position.coords.longitude;
 
-          // 🚨 AQUI ESTÁ A MÁGICA: Envia para o Python calcular
           fetch("/cliente/api/calcular-frete", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -224,23 +230,17 @@
                 alert(data.erro);
                 btn.innerText = "📍 Fora da área de entrega";
                 btn.classList.replace("btn-outline-info", "btn-danger");
-                document.getElementById("taxa-entrega").innerText =
-                  "Indisponível";
+                document.getElementById("taxa-entrega").innerText = "Indisponível";
                 taxaAtual = 0;
                 calcularTotal();
                 return;
               }
 
-              // Atualiza a taxa com o valor que o Python mandou
               taxaAtual = data.taxa;
-              document.getElementById("taxa-entrega").innerText =
-                `R$ ${taxaAtual.toFixed(2)}`;
-              document
-                .getElementById("taxa-entrega")
-                .classList.replace("text-warning", "text-success");
+              document.getElementById("taxa-entrega").innerText = `R$ ${taxaAtual.toFixed(2)}`;
+              document.getElementById("taxa-entrega").classList.replace("text-warning", "text-success");
 
-              document.getElementById("status-localizacao").innerText =
-                "Localização capturada com sucesso!";
+              document.getElementById("status-localizacao").innerText = "Localização capturada com sucesso!";
               btn.classList.replace("btn-outline-info", "btn-success");
               btn.innerText = "📍 Localização Confirmada";
 
@@ -248,29 +248,26 @@
             });
         },
         (error) => {
-          alert(
-            "Não foi possível pegar a localização. Verifique as permissões do navegador.",
-          );
+          alert("Não foi possível pegar a localização. Verifique as permissões do navegador.");
           btn.innerText = "📍 Tentar Novamente";
-        },
+        }
       );
     } else {
       alert("Seu navegador não suporta geolocalização.");
       btn.innerText = "📍 Usar minha localização atual";
     }
   }
-  // 4. Preenche os dados básicos se já existirem no LocalStorage
+
+  // 6. Preenche os dados básicos se já existirem no LocalStorage
   function carregarDadosBasicos() {
     const dados = JSON.parse(localStorage.getItem("dadosClienteLaBrasa")) || {};
     if (dados.cpf) document.getElementById("cpf").value = dados.cpf;
     if (dados.nome) document.getElementById("nome").value = dados.nome;
-    if (dados.telefone)
-      document.getElementById("telefone").value = dados.telefone;
-    if (dados.endereco)
-      document.getElementById("endereco").value = dados.endereco;
+    if (dados.telefone) document.getElementById("telefone").value = dados.telefone;
+    if (dados.endereco) document.getElementById("endereco").value = dados.endereco;
   }
 
-  // 5. Envia o pedido para a API
+  // 7. Envia o pedido para a API
   function enviarPedido() {
     const cpf = document.getElementById("cpf").value;
     const nome = document.getElementById("nome").value;
@@ -282,16 +279,26 @@
       return alert("Por favor, preencha todos os campos!");
     }
     if (!localizacaoCliente.lat) {
-      return alert(
-        "Por favor, clique em 'Usar minha localização' para calcularmos a entrega.",
-      );
+      return alert("Por favor, clique em 'Usar minha localização' para calcularmos a entrega.");
     }
 
-    // Salva os dados no LocalStorage para a próxima compra
-    localStorage.setItem(
-      "dadosClienteLaBrasa",
-      JSON.stringify({ cpf, nome, telefone, endereco }),
-    );
+    localStorage.setItem("dadosClienteLaBrasa", JSON.stringify({ cpf, nome, telefone, endereco }));
+
+    // 🚨 Aqui juntamos os extras na observação para o Admin e Impressão
+    const itensFormatados = carrinho.map(item => {
+        let obsCompleta = item.observacao || '';
+        if (item.extras && item.extras.length > 0) {
+            const nomesExtras = item.extras.map(e => e.nome).join(', ');
+            obsCompleta = obsCompleta ? `[Extras: ${nomesExtras}] ${obsCompleta}` : `[Extras: ${nomesExtras}]`;
+        }
+        return {
+            id: item.id,
+            quantidade: item.quantidade,
+            observacao: obsCompleta,
+            // Como o backend espera 'preco' para somar o total, e o item já tem,
+            // só enviamos o necessário que o backend usa na rota
+        };
+    });
 
     const pedidoData = {
       cpf,
@@ -301,8 +308,8 @@
       pagamento,
       lat: localizacaoCliente.lat,
       lng: localizacaoCliente.lng,
-      total: subtotal,
-      itens: carrinho,
+      total: subtotal, // O subtotal já tem o valor dos extras somados
+      itens: itensFormatados,
     };
 
     const btn = document.querySelector(".btn-orange");
@@ -321,13 +328,13 @@
           btn.innerText = "Fazer Pedido 🔥";
           btn.disabled = false;
         } else {
-          localStorage.removeItem("carrinhoLaBrasa"); // Limpa o carrinho
+          localStorage.removeItem("carrinhoLaBrasa");
           alert(`Pedido #${data.pedido_id} realizado com sucesso!`);
 
           if (data.link_pagamento) {
             window.location.href = data.link_pagamento;
           } else {
-            window.location.href = "/cliente/acompanhar"; // Ou redirecionar para tela de status
+            window.location.href = "/cliente/acompanhar";
           }
         }
       })
