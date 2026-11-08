@@ -15,7 +15,7 @@
             <div class="row g-2" style="max-height: 70vh; overflow-y: auto;">
                 {% for produto in produtos %}
                 <div class="col-6 col-lg-4">
-                    <div class="card bg-secondary text-white p-2 h-100 card-produto-admin" style="cursor: pointer;" onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})">
+                    <div class="card text-white p-2 h-100 card-produto-admin" style="cursor: pointer;" onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})">
                         {% if produto.foto %}
                             <img src="{{ url_for('static', filename='uploads/' + produto.foto) }}" class="rounded mb-2 w-100" style="height: 80px; object-fit: cover;">
                         {% else %}
