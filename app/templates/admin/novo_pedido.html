@@ -2,22 +2,27 @@
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Novo Pedido Manual 📝</h2>
-    <a href="/admin" class="btn btn-outline-light">Voltar</a>
+    <h2>Novo Pedido (Balcão/Salão) 📝</h2>
+    <a href="/admin" class="btn btn-outline-light">Voltar ao Painel</a>
 </div>
 
 <div class="row">
-    <!-- Cardápio para Adicionar -->
-    <div class="col-md-7">
-        <div class="card bg-dark border-secondary p-3 mb-4">
-            <h4 class="text-orange mb-3">Adicionar Itens</h4>
-            <div class="row" id="lista-produtos">
+    <!-- COLUNA ESQUERDA: PRODUTOS -->
+    <div class="col-md-7 mb-4">
+        <div class="card bg-dark border-secondary p-3 h-100">
+            <h4 class="text-orange mb-3">Toque para adicionar</h4>
+            
+            <div class="row g-2" style="max-height: 70vh; overflow-y: auto;">
                 {% for produto in produtos %}
-                <div class="col-6 mb-3">
-                    <div class="card bg-secondary text-white p-2 h-100">
-                        <h6 class="mb-1">{{ produto.nome }}</h6>
-                        <span class="text-warning mb-2">R$ {{ "%.2f"|format(produto.preco) }}</span>
-                        <button class="btn btn-orange btn-sm mt-auto" onclick="addItem({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }})">Adicionar</button>
+                <div class="col-6 col-lg-4">
+                    <div class="card bg-secondary text-white p-2 h-100 card-produto-admin" style="cursor: pointer;" onclick="abrirModalAdd({{ produto.id }}, '{{ produto.nome }}', {{ produto.preco }}, '{{ produto.descricao }}', '{{ produto.foto or '' }}', {{ produto.permite_extra | tojson }})">
+                        {% if produto.foto %}
+                            <img src="{{ url_for('static', filename='uploads/' + produto.foto) }}" class="rounded mb-2 w-100" style="height: 80px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-dark rounded mb-2 d-flex align-items-center justify-content-center" style="height: 80px;">🍔</div>
+                        {% endif %}
+                        <h6 class="mb-1 text-truncate">{{ produto.nome }}</h6>
+                        <span class="text-orange fw-bold small">R$ {{ "%.2f"|format(produto.preco) }}</span>
                     </div>
                 </div>
                 {% endfor %}
@@ -25,42 +30,40 @@
         </div>
     </div>
 
-    <!-- Resumo e Dados do Cliente -->
+    <!-- COLUNA DIREITA: CARRINHO E FINALIZAÇÃO -->
     <div class="col-md-5">
         <div class="card bg-dark border-secondary p-3">
             <h4 class="text-orange mb-3">Resumo do Pedido</h4>
             
-            <ul class="list-group mb-3" id="carrinho-lista">
-                <!-- Itens serão injetados aqui via JS -->
-                <li class="list-group-item bg-dark text-muted border-secondary text-center" id="carrinho-vazio">Nenhum item adicionado.</li>
+            <ul class="list-group mb-3" id="carrinho-lista" style="max-height: 300px; overflow-y: auto;">
+                <!-- Itens injetados via JS -->
             </ul>
 
-            <div class="mb-2 d-flex justify-content-between">
-                <span>Subtotal:</span>
-                <span id="subtotal">R$ 0,00</span>
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-white">Subtotal:</span>
+                <strong id="subtotal" class="text-white">R$ 0,00</strong>
             </div>
-            <div class="mb-2 d-flex justify-content-between align-items-center">
-                <span>Taxa de Entrega:</span>
-                <input type="number" step="0.01" id="taxa-entrega" class="form-control form-control-sm bg-dark text-white border-secondary" style="width: 80px;" value="0" onchange="calcularTotal()">
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-white">Taxa de Entrega:</span>
+                <input type="number" step="0.01" id="taxa-entrega" class="form-control bg-dark text-white border-secondary form-control-sm" style="width: 90px;" value="0" onchange="calcularTotal()">
             </div>
-            <hr class="border-secondary">
-            <div class="mb-3 d-flex justify-content-between text-orange fs-5">
-                <span>Total:</span>
+            
+            <div class="d-flex justify-content-between mb-4 fs-5 text-orange border-top border-secondary pt-3">
+                <strong>Total:</strong>
                 <strong id="total-geral">R$ 0,00</strong>
             </div>
 
-            <hr class="border-secondary">
-            
             <h5 class="text-orange mb-3">Dados do Cliente</h5>
             <form id="form-manual">
                 <div class="mb-2">
-                    <input type="text" id="nome" class="form-control bg-dark text-white border-secondary" placeholder="Nome do Cliente *" required>
+                    <input type="text" id="nome" class="form-control bg-dark text-white border-secondary" placeholder="Nome / Mesa (Ex: Mesa 4 - João) *" required>
                 </div>
                 <div class="mb-2">
-                    <input type="text" id="telefone" class="form-control bg-dark text-white border-secondary" placeholder="Telefone">
+                    <input type="text" id="telefone" class="form-control bg-dark text-white border-secondary" placeholder="Telefone (Opcional)">
                 </div>
                 <div class="mb-2">
-                    <input type="text" id="endereco" class="form-control bg-dark text-white border-secondary" placeholder="Endereço (deixe vazio p/ Retirada)">
+                    <input type="text" id="endereco" class="form-control bg-dark text-white border-secondary" placeholder="Endereço (Deixe vazio para Salão/Retirada)">
                 </div>
                 <div class="mb-2">
                     <select id="pagamento" class="form-select bg-dark text-white border-secondary">
@@ -71,82 +74,199 @@
                 </div>
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="checkbox" id="pago" checked>
-                    <label class="form-check-label text-success fw-bold" for="pago">
-                        Pedido já PAGO
-                    </label>
+                    <label class="form-check-label text-success fw-bold" for="pago">Pedido já PAGO</label>
                 </div>
-                <button type="button" class="btn btn-orange w-100" onclick="salvarPedido()">Finalizar e Salvar Pedido</button>
+                <button type="button" class="btn btn-orange w-100 btn-lg" onclick="salvarPedido()">Finalizar Pedido 🔥</button>
             </form>
         </div>
     </div>
 </div>
+
+<!-- MODAL DE ADICIONAR EXTRA (Admin) -->
+<div class="modal fade" id="modalAdicionarAdmin" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-orange" id="modalNome">Nome do Lanche</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalDescricao" class="text-muted small"></p>
+                
+                <label class="form-label mt-2 fw-bold text-white">Alguma observação? (Ex: ponto da carne, sem tomate)</label>
+                <textarea id="modalObservacao" class="form-control bg-dark text-white border-secondary mb-3" rows="2"></textarea>
+
+                <div id="area-extras-admin" class="d-none">
+                    <label class="form-label fw-bold text-orange">Adicionar Extras:</label>
+                    <div id="lista-extras-admin" class="d-flex flex-column gap-2"></div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-orange" id="btnConfirmarAddAdmin">Adicionar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dados dos Extras para o JS -->
+<script>
+    const EXTRAS_DISPONIVEIS = [
+        {% for extra in extras %}
+        { id: {{ extra.id }}, nome: "{{ extra.nome }}", preco: {{ extra.preco }}, foto: "{{ extra.foto or '' }}" },
+        {% endfor %}
+    ];
+</script>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    let carrinho = [];
-    let subtotal = 0;
+    let carrinhoManual = [];
+    let subtotalManual = 0;
+    let itemTemporario = null;
+    let extrasSelecionados = [];
 
-    function addItem(id, nome, preco) {
-        const obs = prompt(`Observação para ${nome}:`);
-        carrinho.push({ id, nome, preco, quantidade: 1, observacao: obs || '' });
-        renderCarrinho();
+    // 1. Abre o Modal do Lanche
+    function abrirModalAdd(id, nome, preco, descricao, foto, permiteExtra) {
+        itemTemporario = { id, nome, preco };
+        extrasSelecionados = [];
+
+        document.getElementById('modalNome').innerText = nome;
+        document.getElementById('modalDescricao').innerText = descricao || '';
+        document.getElementById('modalObservacao').value = '';
+
+        const areaExtras = document.getElementById('area-extras-admin');
+        const listaExtras = document.getElementById('lista-extras-admin');
+
+        if (permiteExtra && EXTRAS_DISPONIVEIS.length > 0) {
+            areaExtras.classList.remove('d-none');
+            listaExtras.innerHTML = '';
+            
+            EXTRAS_DISPONIVEIS.forEach(extra => {
+                const fotoHtml = extra.foto 
+                    ? `<img src="/static/uploads/${extra.foto}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 6px;" class="ms-2">`
+                    : `<div class="ms-2 bg-secondary rounded d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">🍟</div>`;
+
+                listaExtras.innerHTML += `
+                    <label class="d-flex justify-content-between align-items-center p-2 rounded" style="cursor: pointer; background-color: rgba(255,255,255,0.05); border: 1px solid #444;">
+                        <div class="d-flex align-items-center">
+                            <input class="form-check-input extra-checkbox me-3" type="checkbox" value="${extra.id}" data-nome="${extra.nome}" data-preco="${extra.preco}" onchange="atualizarPrecoModal()">
+                            <div>
+                                <span class="text-white fw-bold d-block">${extra.nome}</span>
+                                <span class="text-orange small">+ R$ ${extra.preco.toFixed(2)}</span>
+                            </div>
+                        </div>
+                        ${fotoHtml}
+                    </label>
+                `;
+            });
+        } else {
+            areaExtras.classList.add('d-none');
+        }
+
+        document.getElementById('btnConfirmarAddAdmin').innerText = `Adicionar - R$ ${preco.toFixed(2)}`;
+        new bootstrap.Modal(document.getElementById('modalAdicionarAdmin')).show();
     }
 
-    function removerItem(index) {
-        carrinho.splice(index, 1);
-        renderCarrinho();
+    // 2. Atualiza o preço no modal ao marcar extras
+    function atualizarPrecoModal() {
+        let precoTotal = itemTemporario.preco;
+        extrasSelecionados = [];
+        
+        document.querySelectorAll('.extra-checkbox:checked').forEach(cb => {
+            precoTotal += parseFloat(cb.dataset.preco);
+            extrasSelecionados.push({ 
+                id: parseInt(cb.value), 
+                nome: cb.dataset.nome, 
+                preco: parseFloat(cb.dataset.preco) 
+            });
+        });
+
+        document.getElementById('btnConfirmarAddAdmin').innerText = `Adicionar - R$ ${precoTotal.toFixed(2)}`;
     }
 
+    // 3. Confirma o item no carrinho
+    document.getElementById('btnConfirmarAddAdmin').addEventListener('click', function() {
+        if (!itemTemporario) return;
+
+        const obs = document.getElementById('modalObservacao').value;
+        
+        // Junta as observações com os extras para o admin ver
+        let obsCompleta = obs;
+        if (extrasSelecionados.length > 0) {
+            const nomesExtras = extrasSelecionados.map(e => e.nome).join(', ');
+            obsCompleta = obs ? `[Extras: ${nomesExtras}] ${obs}` : `[Extras: ${nomesExtras}]`;
+        }
+
+        carrinhoManual.push({
+            id: itemTemporario.id,
+            nome: itemTemporario.nome,
+            preco: itemTemporario.preco + extrasSelecionados.reduce((acc, curr) => acc + curr.preco, 0),
+            quantidade: 1,
+            observacao: obsCompleta
+        });
+
+        bootstrap.Modal.getInstance(document.getElementById('modalAdicionarAdmin')).hide();
+        renderCarrinho();
+    });
+
+    // 4. Renderiza o carrinho na lateral
     function renderCarrinho() {
         const lista = document.getElementById('carrinho-lista');
         lista.innerHTML = '';
-        subtotal = 0;
+        subtotalManual = 0;
 
-        if(carrinho.length === 0) {
+        if (carrinhoManual.length === 0) {
             lista.innerHTML = '<li class="list-group-item bg-dark text-muted border-secondary text-center">Nenhum item adicionado.</li>';
         }
 
-        carrinho.forEach((item, index) => {
-            subtotal += item.preco;
+        carrinhoManual.forEach((item, index) => {
+            subtotalManual += item.preco * item.quantidade;
             lista.innerHTML += `
                 <li class="list-group-item bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-2">
-                    <div>
+                    <div class="flex-grow-1">
                         <span class="fw-bold">${item.quantidade}x ${item.nome}</span><br>
-                        <small class="text-muted">${item.observacao}</small>
+                        <small class="text-warning">${item.observacao}</small>
                     </div>
-                    <div>
-                        <span class="text-orange me-2">R$ ${item.preco.toFixed(2)}</span>
+                    <div class="d-flex align-items-center gap-2 ms-2">
+                        <span class="text-orange fw-bold">R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
                         <button class="btn btn-sm btn-outline-danger" onclick="removerItem(${index})">X</button>
                     </div>
                 </li>
             `;
         });
 
-        document.getElementById('subtotal').innerText = `R$ ${subtotal.toFixed(2)}`;
+        document.getElementById('subtotal').innerText = `R$ ${subtotalManual.toFixed(2)}`;
         calcularTotal();
     }
 
+    function removerItem(index) {
+        carrinhoManual.splice(index, 1);
+        renderCarrinho();
+    }
+
+    // 5. Calcula Total (Subtotal + Taxa)
     function calcularTotal() {
         const taxa = parseFloat(document.getElementById('taxa-entrega').value) || 0;
-        const total = subtotal + taxa;
+        const total = subtotalManual + taxa;
         document.getElementById('total-geral').innerText = `R$ ${total.toFixed(2)}`;
     }
 
+    // 6. Salva no Banco de Dados
     function salvarPedido() {
-        if(carrinho.length === 0) return alert("Adicione itens ao pedido!");
+        if (carrinhoManual.length === 0) return alert("Adicione itens ao pedido!");
         const nome = document.getElementById('nome').value;
-        if(!nome) return alert("Informe o nome do cliente!");
+        if (!nome) return alert("Informe o nome ou a mesa do cliente!");
 
         const pedidoData = {
             nome_cliente: nome,
             telefone: document.getElementById('telefone').value,
-            endereco: document.getElementById('endereco').value,
+            endereco: document.getElementById('endereco').value || 'Retirada no Balcão / Salão',
             taxa_entrega: parseFloat(document.getElementById('taxa-entrega').value) || 0,
             pagamento: document.getElementById('pagamento').value,
             pago: document.getElementById('pago').checked,
-            total: subtotal + (parseFloat(document.getElementById('taxa-entrega').value) || 0),
-            itens: carrinho
+            total: subtotalManual + (parseFloat(document.getElementById('taxa-entrega').value) || 0),
+            itens: carrinhoManual
         };
 
         fetch('/admin/api/salvar-pedido-manual', {
@@ -158,9 +278,16 @@
         .then(data => {
             if(data.sucesso) {
                 alert("Pedido salvo com sucesso!");
-                window.location.href = `/admin/imprimir/${data.pedido_id}`; // Redireciona para a impressão
+                window.location.href = `/admin/imprimir/${data.pedido_id}`;
+            } else {
+                alert("Erro ao salvar pedido.");
             }
         });
     }
+
+    // Inicializa o cálculo
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCarrinho();
+    });
 </script>
 {% endblock %}

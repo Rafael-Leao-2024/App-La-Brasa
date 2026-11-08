@@ -55,10 +55,13 @@ def admin_produtos():
     produtos = Produto.query.all()
     return render_template('admin/produtos.html', produtos=produtos)
 
-@admin_bp.route('/novo-pedido')
+@admin_bp.route('/admin/novo-pedido')
 def admin_novo_pedido():
-    produtos = Produto.query.filter_by(ativo=True).all()  # Apenas produtos ativos
-    return render_template('admin/novo_pedido.html', produtos=produtos)
+    # Pega lanches, bebidas e porções (tudo que NÃO é extra)
+    produtos = Produto.query.filter(Produto.categoria != 'extra', Produto.ativo == True).all()
+    # Pega só os extras
+    extras = Produto.query.filter_by(categoria='extra', ativo=True).all()
+    return render_template('admin/novo_pedido.html', produtos=produtos, extras=extras)
 
 
 @admin_bp.route('/api/salvar-pedido-manual', methods=['POST'])

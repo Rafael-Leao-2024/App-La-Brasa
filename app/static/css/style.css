@@ -88,3 +88,16 @@
     box-shadow: none !important;
     cursor: pointer;
 }
+
+/* Efeito dos cards do PDV Admin */
+.card-produto-admin {
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+.card-produto-admin:hover {
+    border-color: var(--cor-primaria);
+    transform: scale(1.03);
+}
+.card-produto-admin:active {
+    transform: scale(0.98);
+}
