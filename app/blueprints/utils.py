@@ -1,9 +1,14 @@
 # utils.py
 import math
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # COLOQUE AQUI AS COORDENADAS REAIS DA SUA LANCHONETE
-LAT_LOJA = -8.1324223
-LNG_LOJA = -34.9349187
+LAT_LOJA = float(os.getenv("LAT_LOJA"))  # Latitude da loja
+LNG_LOJA = float(os.getenv("LNG_LOJA"))  # Longitude da loja
+
 
 def calcular_distancia(lat1, lon1, lat2, lon2):
     # Fórmula de Haversine para calcular distância em KM

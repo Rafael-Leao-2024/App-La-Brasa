@@ -1,8 +1,11 @@
 import requests
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Substitua pela sua InfiniteTag (sem o $)
-INFINITE_TAG = "rafael-leao-da-silva-"
+
 
 def gerar_link_pagamento(pedido_id, total_reais, nome_cliente, descricao_pedido, url_webhook, url_retorno):
     """
@@ -13,7 +16,7 @@ def gerar_link_pagamento(pedido_id, total_reais, nome_cliente, descricao_pedido,
     valor_centavos = int(round(total_reais * 100))
     
     payload = {
-        "handle": INFINITE_TAG,
+        "handle": os.getenv("INFINITE_TAG"),
         "order_nsu": str(pedido_id),
         "redirect_url": url_retorno,
         "webhook_url": url_webhook,
