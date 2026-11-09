@@ -104,6 +104,7 @@
               <th>Categoria</th>
               <th>Status</th>
               <th class="text-center">Ações</th>
+              <th class="text-center">editar</th>
             </tr>
           </thead>
           <tbody>
@@ -167,6 +168,14 @@
                   {% endif %}
                 </form>
               </td>
+              <td class="text-center">
+                <a
+                  href="{{ url_for('admin.editar_produto', produto_id=produto.id) }}"
+                  class="btn btn-sm btn-outline-light"
+                  title="Editar Produto"
+                >
+                  ✏️ Editar
+                </a>
             </tr>
             {% else %}
             <tr>

@@ -142,3 +142,28 @@ def toggle_produto(produto_id):
     return redirect(url_for('admin.admin_produtos'))
 
 
+@admin_bp.route('/produtos/editar/<int:produto_id>', methods=['GET'])
+def editar_produto(produto_id):
+    produto = Produto.query.get_or_404(produto_id)
+    return render_template('admin/editar_produto.html', produto=produto)
+
+@admin_bp.route('/produtos/editar/<int:produto_id>', methods=['POST'])
+def salvar_edicao_produto(produto_id):
+    produto = Produto.query.get_or_404(produto_id)
+    
+    # Atualiza os dados de texto e número
+    produto.nome = request.form.get('nome')
+    produto.descricao = request.form.get('descricao')
+    produto.preco = float(request.form.get('preco'))
+    produto.categoria = request.form.get('categoria')
+    
+    # Atualiza a flag de extras
+    produto.permite_extra = True if request.form.get('permite_extra') else False
+    
+    # A foto NÃO é alterada aqui, conforme você pediu
+    # O código antigo da foto continua intacto.
+    
+    db.session.commit()
+    return redirect(url_for('admin.admin_produtos'))
+
+
