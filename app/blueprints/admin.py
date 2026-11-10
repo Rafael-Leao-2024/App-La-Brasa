@@ -52,7 +52,16 @@ def admin_produtos():
         db.session.commit()
         return redirect(url_for('admin.admin_produtos'))
 
-    produtos = Produto.query.all()
+    # GET request: apenas renderiza a página com a lista de produtos na ordem lanche, bebida, porção, extra
+    produtos = Produto.query.order_by(
+        db.case(
+            (Produto.categoria == 'lanche', 1),
+            (Produto.categoria == 'bebida', 2),
+            (Produto.categoria == 'porcao', 3),
+            (Produto.categoria == 'extra', 4),
+            else_=5
+        )
+    ).all()
     return render_template('admin/produtos.html', produtos=produtos)
 
 @admin_bp.route('/novo-pedido')
